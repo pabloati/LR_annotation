@@ -1,0 +1,10 @@
+name: busco
+channels:
+  - conda-forge
+dependencies:
+  - busco=5.8.2
+  - cd-hit
+  - ca-certificates
+  - certifi
+  - openssl
+prefix: /home/pabloati/miniforge3/envs/busco
