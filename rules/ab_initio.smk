@@ -1,6 +1,6 @@
 # Snakefile for ab initio gene prediction
 #TODO: move to a module
-def calculate_subset_size(file_path,test_size):
+def calculate_gene_number(file_path):
     count = 0
     try:
         with open(file_path, 'r') as file:
@@ -13,32 +13,13 @@ def calculate_subset_size(file_path,test_size):
     except IOError:
         print(f"Error: Unable to read the file '{file_path}'.")
         return None
-    # Subset based on size
-    testing_transcripts = count - test_size
-    # If the number of transcripts is less than 1000
-    if testing_transcripts < 1000:
-        subset = [testing_transcripts]
-    
-    # if the testing_transcripts is between 1000 and 1500
-    elif testing_transcripts > 1000 and testing_transcripts < 1500:
-        subset = [200, 500, 800, 1000]
-    
-    # if the testing_transcripts is between 1500 and 2000
-    elif testing_transcripts > 1500 and testing_transcripts < 2000:
-        subset = [200, 500, 800, 1000, 1500]
-    
-    # From 2000 increase the number by 1000 to 8000
-    elif testing_transcripts > 2000:
-        subset = [200, 500, 800, 1000, 1500, 2000]
-        while (subset[-1] + 1000) < testing_transcripts and (subset[-1] + 1000) <= 8000:
-            subset.append(subset[-1] + 1000)
-    return ','.join(map(str, subset))
+
 
 rule busco_run:
     input:
         genome = "data/genome.fasta"
     output:
-        directory("busco_output")
+        directory(dir.out.ab_initio.busco)
     conda:
         "envs/busco.yaml"  
     params:
@@ -57,9 +38,9 @@ rule busco_run:
 
 rule busco_gather:
     input:
-        "busco_output"
+        dir.out.ab_initio.busco
     output:
-        "augustus_model/busco_genes.faa"
+        genes=os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.faa")
     params:
         lineage = config.optional.lineage,
         gene_type = "single"
@@ -88,9 +69,9 @@ rule concatenate_gff:
         "augustus_model/cdhit.lst",
         "busco_output"
     output:
-        directory("augustus_model/busco_genes")
+        directory(dir.out.ab_initio.augustus_model)
     conda:
-        "envs/busco.yaml"
+        os.path.join(dir.env,"busco.yaml")
     params:
         lineage = config.optional.lineage,
         gene_type = "single"
@@ -102,9 +83,9 @@ rule concatenate_gff:
 rule gtf2genbank:
     input:
         genome = config.mandatory.genome,
-        gff = "augustus_model/busco_genes/busco_genes.gff"
+        gff = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.gff")
     output:
-        "augustus_model/busco_genes/busco_genes.gb"
+        gen_bank = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.gb")
     conda:
         "envs/busco.yaml"
     params:
@@ -118,11 +99,12 @@ rule gtf2genbank:
 
 rule generate_subsets:
     input:
-        "augustus_model/busco_genes/busco_genes.gb"
+        gen_bank = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.gb")
     output:
-        directory("augustus_model/subsets")
+        gen_bank = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.subset.gb")
     params:
-        subset = calculate_subset_size("augustus_model/busco_genes/busco_genes.gb", config.optional.test_size),
+        subset = min(config.optional.test_size,
+                     calculate_gene_number("augustus_model/busco_genes/busco_genes.gb")),
         seed = 123
     log:
         "logs/generate_subsets.log"
@@ -131,97 +113,98 @@ rule generate_subsets:
 
 rule new_species:
     input:
-        "augustus_model/subsets/{subset}.gb"
+        gen_bank = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.subset.gb")
     output:
-        touch("augustus_model/subsets/{subset}_new_species.done")
+        touch(os.path.join(dir.out.ab_initio.augustus_model,"new_species.done"))
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_new_species.log"
+        "logs/new_species.log"
     shell:
-        "new_species.pl --species={wildcards.subset} &> {log}"
+        "new_species.pl --species=new_species &> {log}"
 
 rule initial_etraining:
     input:
-        gb = "augustus_model/subsets/{subset}.gb",
-        new_species = "augustus_model/subsets/{subset}_new_species.done"
+        gb = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.subset.gb")
+        new_species = os.path.join(dir.out.ab_initio.augustus_model,"new_species.done")
     output:
-        "augustus_model/subsets/{subset}_etrain.out"
+        training = os.path.join(dir.out.ab_initio.augustus_training,"etrain.out")
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_initial_etraining.log"
+        "logs/initial_etraining.log"
     shell:
-        "etraining --species={wildcards.subset} {input.gb} &> {log}"
+        "etraining --species=new_species {input.gb} &> {log}"
 
 rule identify_bad_genes:
     input:
-        "augustus_model/subsets/{subset}_etrain.out"
+        training = os.path.join(dir.out.ab_initio.augustus_training,"etrain.out")
     output:
-        "augustus_model/subsets/{subset}_bad.lst"
+        bad = os.path.join(dir.out.ab_initio.augustus_training,"bad.lst")
     log:
-        "logs/{subset}_identify_bad_genes.log"
+        "logs/identify_bad_genes.log"
     shell:
         "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output} &> {log}"
 
 rule filter_genes:
     input:
-        bad_list = "augustus_model/subsets/{subset}_bad.lst",
-        gb = "augustus_model/subsets/{subset}.gb"
+        bad = os.path.join(dir.out.ab_initio.augustus_training,"bad.lst")
+        gb = os.path.join(dir.out.ab_initio.augustus_model,"busco_genes.subset.gb")
     output:
-        "augustus_model/subsets/{subset}.f.gb"
+        filt = os.path.join(dir.out.ab_initio.augustus_training,"filtered.gb")
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_filter_genes.log"
+        "logs/filter_genes.log"
     shell:
         "filterGenes.pl {input.bad_list} {input.gb} > {output} &> {log}"
 
 rule retrain:
     input:
-        "augustus_model/subsets/{subset}.f.gb"
+        bad = os.path.join(dir.out.ab_initio.augustus_training,"filtered.gb")
     output:
-        "augustus_model/subsets/{subset}_etrain.f.out"
+        train = os.path.join(dir.out.ab_initio.augustus_training,"etrain_filtered.out")
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_retrain.log"
+        "logs/retrain.log"
     shell:
-        "etraining --species={wildcards.subset} {input} &> {log}"
+        "etraining --species=new_species {input} &> {log}"
 
 rule extract_stop_codon_freq:
     input:
-        "augustus_model/subsets/{subset}_etrain.f.out"
+        train = os.path.join(dir.out.ab_initio.augustus_training,"etrain_filtered.out")
     output:
-        "augustus_model/subsets/{subset}_SC_freq.txt"
+        train = os.path.join(dir.out.ab_initio.augustus_training,"SC_freq.txt")
     log:
-        "logs/{subset}_extract_stop_codon_freq.log"
+        "logs/extract_stop_codon_freq.log"
     shell:
         "tail -6 {input} | head -3 > {output} &> {log}"
 
+# TODO: Rewrite this rule to be adapted to snakemake nature. It creates a new file and then substitutes the frequency one.
 rule modify_stop_codon_freq:
     input:
-        "augustus_model/subsets/{subset}_SC_freq.txt"
+        train = os.path.join(dir.out.ab_initio.augustus_training,"SC_freq.txt")
     output:
-        touch("augustus_model/subsets/{subset}_SC_freq_modified.done")
+        mod = os.path.join(dir.out.ab_initio.augustus_training,"SC_freq_mod.done")
     params:
         utilities = config.optional.utilities
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_modify_stop_codon_freq.log"
-    shell:
-        "python3 {params.utilities}/AUGUSTUS/modify_SC_freq.py {input} {wildcards.subset} &> {log}"
+        "logs/modify_stop_codon_freq.log"
+    script:
+        "scripts/modify_SC_freq.py"
 
 rule run_augustus:
     input:
         chr19 = config.mandatory.chr19,
-        sc_freq_modified = "augustus_model/subsets/{subset}_SC_freq_modified.done"
+        mod = os.path.join(dir.out.ab_initio.augustus_training,"SC_freq_mod.done")
     output:
-        "augustus_model/subsets/{subset}.gtf"
+        gtf = os.path.join(dir.out.ab_inition.augustus,"ab_initio_prediction.gtf")
     conda:
         "envs/augustus.yaml"
     log:
-        "logs/{subset}_run_augustus.log"
+        "logs/run_augustus.log"
     shell:
-        "augustus --species={wildcards.subset} {input.chr19} --protein=off > {output} &> {log}"
+        "augustus --species=new_species {input.chr19} --protein=off > {output} &> {log}"

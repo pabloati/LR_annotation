@@ -4,7 +4,8 @@ mandatory:
   outdir: ""
 optional:
   lineage: "eutheria_odb10"
-  test_size: 1000
+  flanking_region: 1000
+  test_size: 5000
 resources:
   big:
     cpus: 8
