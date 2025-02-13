@@ -1,9 +1,9 @@
 # Snakefile for ab initio gene prediction
 #TODO: move to a module
-def calculate_subset_size(file,test_size):
+def calculate_subset_size(file_path,test_size):
     count = 0
     try:
-        with open(file, 'r') as file:
+        with open(file_path, 'r') as file:
             for line in file:
                 count += line.upper().count("LOCUS")
         return count
@@ -45,24 +45,28 @@ rule busco_run:
         busco_dir = "data/busco",
         lineage = config.optional.lineage
     threads:
-        config.resources.big.cpu
+        config.resources.big.cpus
+    log:
+        "logs/busco_run.log"
     shell:
         """
         busco -i {input} -o {output} \
             -l {params.busco_dir} -m genome --augustus \
-            -c {threads}
+            -c {threads} &> {log}
         """
 
 rule busco_gather:
     input:
-        "busco_output"  
+        "busco_output"
     output:
-        "augustus_model/busco_genes.faa" # Propper file
+        "augustus_model/busco_genes.faa"
     params:
-        lineage = config.optional.lineage
+        lineage = config.optional.lineage,
         gene_type = "single"
+    log:
+        "logs/busco_gather.log"
     script:
-        "scripts/busco_complete_aa.py"
+        "scripts/busco_complete_aa.py &> {log}"
 
 rule clustering_busco_genes:
     input:
@@ -71,27 +75,29 @@ rule clustering_busco_genes:
         "augustus_model/cdhit.lst"
     conda:
         "envs/busco.yaml"
+    log:
+        "logs/clustering_busco_genes.log"
     shell:
-    #TODO: See this parameters, if they could be set as user options
         """
-        cd-hit -o complete_buscos.cdhit -c 0.8 -i {input} -p 1 -d 0 -T 4 -M 48000
+        cd-hit -o complete_buscos.cdhit -c 0.8 -i {input} -p 1 -d 0 -T 4 -M 48000 &> {log}
         grep ">" complete_buscos.cdhit | cut -f2 -d">" | cut -f1 > {output}
         """
 
 rule concatenate_gff:
     input:
-        "augustus_model/cdhit.lst"
+        "augustus_model/cdhit.lst",
         "busco_output"
     output:
-        directory("augustus_model/busco_genes") # TODO: This has to be a directory 
+        directory("augustus_model/busco_genes")
     conda:
         "envs/busco.yaml"
     params:
         lineage = config.optional.lineage,
         gene_type = "single"
+    log:
+        "logs/concatenate_gff.log"
     script:
-        "scripts/concatenate_GFF.py"
-
+        "scripts/concatenate_GFF.py &> {log}"
 
 rule gtf2genbank:
     input:
@@ -103,9 +109,11 @@ rule gtf2genbank:
         "envs/busco.yaml"
     params:
         flanking_reigion = config.optional.flanking_region
+    log:
+        "logs/gtf2genbank.log"
     shell:
         """
-        gff2gbSmallDNA.pl {input.gff} {input.genome} {params.flanking_region} {output}
+        gff2gbSmallDNA.pl {input.gff} {input.genome} {params.flanking_region} {output} &> {log}
         """
 
 rule generate_subsets:
@@ -116,8 +124,10 @@ rule generate_subsets:
     params:
         subset = calculate_subset_size("augustus_model/busco_genes/busco_genes.gb", config.optional.test_size),
         seed = 123
+    log:
+        "logs/generate_subsets.log"
     script:
-        "scripts/generate_subsets.py"
+        "scripts/generate_subsets.py &> {log}"
 
 rule new_species:
     input:
@@ -126,8 +136,10 @@ rule new_species:
         touch("augustus_model/subsets/{subset}_new_species.done")
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_new_species.log"
     shell:
-        "new_species.pl --species={wildcards.subset}"
+        "new_species.pl --species={wildcards.subset} &> {log}"
 
 rule initial_etraining:
     input:
@@ -137,16 +149,20 @@ rule initial_etraining:
         "augustus_model/subsets/{subset}_etrain.out"
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_initial_etraining.log"
     shell:
-        "etraining --species={wildcards.subset} {input.gb} &> {output}"
+        "etraining --species={wildcards.subset} {input.gb} &> {log}"
 
 rule identify_bad_genes:
     input:
         "augustus_model/subsets/{subset}_etrain.out"
     output:
         "augustus_model/subsets/{subset}_bad.lst"
+    log:
+        "logs/{subset}_identify_bad_genes.log"
     shell:
-        "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output}"
+        "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output} &> {log}"
 
 rule filter_genes:
     input:
@@ -156,8 +172,10 @@ rule filter_genes:
         "augustus_model/subsets/{subset}.f.gb"
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_filter_genes.log"
     shell:
-        "filterGenes.pl {input.bad_list} {input.gb} > {output}"
+        "filterGenes.pl {input.bad_list} {input.gb} > {output} &> {log}"
 
 rule retrain:
     input:
@@ -166,16 +184,20 @@ rule retrain:
         "augustus_model/subsets/{subset}_etrain.f.out"
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_retrain.log"
     shell:
-        "etraining --species={wildcards.subset} {input} &> {output}"
+        "etraining --species={wildcards.subset} {input} &> {log}"
 
 rule extract_stop_codon_freq:
     input:
         "augustus_model/subsets/{subset}_etrain.f.out"
     output:
         "augustus_model/subsets/{subset}_SC_freq.txt"
+    log:
+        "logs/{subset}_extract_stop_codon_freq.log"
     shell:
-        "tail -6 {input} | head -3 > {output}"
+        "tail -6 {input} | head -3 > {output} &> {log}"
 
 rule modify_stop_codon_freq:
     input:
@@ -186,8 +208,10 @@ rule modify_stop_codon_freq:
         utilities = config.optional.utilities
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_modify_stop_codon_freq.log"
     shell:
-        "python3 {params.utilities}/AUGUSTUS/modify_SC_freq.py {input} {wildcards.subset}"
+        "python3 {params.utilities}/AUGUSTUS/modify_SC_freq.py {input} {wildcards.subset} &> {log}"
 
 rule run_augustus:
     input:
@@ -197,11 +221,7 @@ rule run_augustus:
         "augustus_model/subsets/{subset}.gtf"
     conda:
         "envs/augustus.yaml"
+    log:
+        "logs/{subset}_run_augustus.log"
     shell:
-        "augustus --species={wildcards.subset} {input.chr19} --protein=off > {output}"
-
-rule all:
-    input:
-        expand("augustus_model/subsets/{subset}.gtf", subset=)
-
-    
+        "augustus --species={wildcards.subset} {input.chr19} --protein=off > {output} &> {log}"

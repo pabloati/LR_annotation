@@ -4,5 +4,14 @@ mandatory:
   outdir: ""
 optional:
   lineage: "eutheria_odb10"
-  threads: 10
   test_size: 1000
+resources:
+  big:
+    cpus: 8
+    mem: 32G
+    time: 24:00:00
+  small:
+    cpus: 4
+    mem: 16G
+    time: 12:00:00
+  
