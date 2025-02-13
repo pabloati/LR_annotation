@@ -1,0 +1,7 @@
+mandatory:
+  genome: ""
+  input: ""
+  outdir: ""
+optional:
+  lineage: "eutheria_odb10"
+  threads: 10
