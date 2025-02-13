@@ -5,3 +5,4 @@ mandatory:
 optional:
   lineage: "eutheria_odb10"
   threads: 10
+  test_size: 1000
