@@ -17,7 +17,7 @@ def calculate_gene_number(file_path):
 
 rule busco_run:
     input:
-        genome = config.mandatory.genome
+        genome = config.required.genome
     output:
         directory(dir.out.ab_busco)
     conda:
@@ -82,7 +82,7 @@ rule concatenate_gff:
 
 rule gtf2genbank:
     input:
-        genome = config.mandatory.genome,
+        genome = config.required.genome,
         gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
     output:
         gen_bank = os.path.join(dir.out.ab_augustus_model,"busco_genes.gb")
@@ -208,7 +208,7 @@ rule modify_stop_codon_freq:
 # TODO: Is there any way to increase augustus usage to >1 core?
 rule run_augustus:
     input:
-        chr19 = config.mandatory.chr19,
+        chr19 = config.required.chr19,
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
     output:
         gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")

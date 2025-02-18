@@ -1,0 +1,1 @@
+2025-02-18 17:47:56 DEBUG:busco.run_BUSCO	Command line: /home/pabloati/Documents/oscars/pipeline/.snakemake/conda/33b5771b5fc27127d748f3e03bb50ad5_/bin/busco -i -o test/results/chr22/ab_initio/busco -l eutheria_odb10 -m genome --augustus -c 5 --download_path test/busco_downloads

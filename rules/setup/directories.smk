@@ -15,8 +15,8 @@ except (KeyError, AssertionError):
 
 ### Output_location
 try:
-    assert (ap.utils.to_dict(config.args)["required"]["output"]) is not None
-    dir.out.base = config.args.output
+    assert config.required.outdir is not None
+    dir.out.base = config.required.outdir
 except (KeyError, AssertionError):
     dir.out.base = "evidence_annot"
 

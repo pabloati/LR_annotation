@@ -1,4 +1,4 @@
-mandatory:
+required:
   genome: "test/data/GRCh38.primary_assembly.chr22.fa"
   input: ""
   outdir: "test/results/chr22"
