@@ -1,0 +1,11 @@
+
+
+Building a new DB, current time: 02/18/2025 17:39:24
+New DB name:   /home/pabloati/Documents/oscars/pipeline/evidence_annot/ab_initio/busco/blast_db/GRCh38.primary_assembly.chr22.fa
+New DB title:  /home/pabloati/Documents/oscars/pipeline/test/data/GRCh38.primary_assembly.chr22.fa
+Sequence type: Nucleotide
+Keep MBits: T
+Maximum file size: 3000000000B
+Adding sequences from FASTA; added 1 sequences in 0.604828 seconds.
+
+

@@ -1,6 +1,7 @@
 name: augustus
 channels:
   - conda-forge
+  - bioconda
 dependencies:
-  - augustus
+  - augustus==3.5.0
 prefix: /home/pabloati/miniforge3/envs/augustus

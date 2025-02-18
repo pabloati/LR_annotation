@@ -3,6 +3,7 @@ mandatory:
   input: ""
   outdir: "test/results/chr22"
 optional:
+  busco_downloads: "test/busco_downloads"
   lineage: "eutheria_odb10"
   flanking_region: 1000
   test_size: 5000

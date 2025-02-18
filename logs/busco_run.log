@@ -1,0 +1,13 @@
+2025-02-18 17:39:19 INFO:	***** Start a BUSCO v5.8.2 analysis, current time: 02/18/2025 17:39:19 *****
+2025-02-18 17:39:19 INFO:	Configuring BUSCO with local environment
+2025-02-18 17:39:19 INFO:	Running genome mode
+2025-02-18 17:39:19 INFO:	Downloading information on latest versions of BUSCO data...
+2025-02-18 17:39:22 INFO:	Input file is /home/pabloati/Documents/oscars/pipeline/test/data/GRCh38.primary_assembly.chr22.fa
+2025-02-18 17:39:22 INFO:	Running BUSCO using lineage dataset eutheria_odb10 (eukaryota, 2024-01-08)
+2025-02-18 17:39:22 INFO:	Running 1 job(s) on bbtools, starting at 02/18/2025 17:39:22
+2025-02-18 17:39:23 INFO:	[bbtools]	1 of 1 task(s) completed
+2025-02-18 17:39:23 INFO:	Running 1 job(s) on makeblastdb, starting at 02/18/2025 17:39:23
+2025-02-18 17:39:24 INFO:	Creating BLAST database with input file
+2025-02-18 17:39:25 INFO:	[makeblastdb]	1 of 1 task(s) completed
+2025-02-18 17:39:25 INFO:	Running a BLAST search for BUSCOs against created database
+2025-02-18 17:39:25 INFO:	Running 1 job(s) on tblastn, starting at 02/18/2025 17:39:25

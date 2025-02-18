@@ -21,9 +21,9 @@ rule busco_run:
     output:
         directory(dir.out.ab_busco)
     conda:
-        "envs/busco.yaml"  
+        f"{dir.env}/busco.yaml"  
     params:
-        busco_dir = "data/busco",
+        busco_dir = config.optional.busco_downloads,
         lineage = config.optional.lineage
     threads:
         config.resources.big.cpus
@@ -32,8 +32,8 @@ rule busco_run:
     shell:
         """
         busco -i {input} -o {output} \
-            -l {params.busco_dir} -m genome --augustus \
-            -c {threads} &> {log}
+            -l {params.lineage} -m genome --augustus \
+            -c {threads} --download_path {params.busco_dir} &> {log}
         """
 
 rule busco_gather:
@@ -55,7 +55,7 @@ rule clustering_busco_genes:
     output:
         os.path.join(dir.out.ab_augustus_model,"cdhit.lst")
     conda:
-        "envs/busco.yaml"
+        os.path.join(dir.env,"busco.yaml")
     log:
         "logs/clustering_busco_genes.log"
     shell:
@@ -87,7 +87,7 @@ rule gtf2genbank:
     output:
         gen_bank = os.path.join(dir.out.ab_augustus_model,"busco_genes.gb")
     conda:
-        "envs/busco.yaml"
+        os.path.join(dir.env,"busco.yaml")
     params:
         flanking_region = config.optional.flanking_region
     log:
@@ -118,7 +118,7 @@ rule new_species:
     output:
         touch(os.path.join(dir.out.ab_augustus_model,f"{config.optional.species_name}.done"))
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
     log:
@@ -133,7 +133,7 @@ rule initial_etraining:
     output:
         training = os.path.join(dir.out.ab_augustus_training,"etrain.out")
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
     log:
@@ -158,7 +158,7 @@ rule filter_genes:
     output:
         filt = os.path.join(dir.out.ab_augustus_training,"filtered.gb")
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     log:
         "logs/filter_genes.log"
     shell:
@@ -170,7 +170,7 @@ rule retrain:
     output:
         train = os.path.join(dir.out.ab_augustus_training,"etrain_filtered.out")
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
     log:
@@ -199,12 +199,13 @@ rule modify_stop_codon_freq:
         name = config.optional.species_name,
         augustus = os.environ.get("AUGUSTUS_CONFIG_PATH")
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     log:
         "logs/modify_stop_codon_freq.log"
     script:
         "scripts/modify_SC_freq.py"
 
+# TODO: Is there any way to increase augustus usage to >1 core?
 rule run_augustus:
     input:
         chr19 = config.mandatory.chr19,
@@ -212,7 +213,7 @@ rule run_augustus:
     output:
         gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
     conda:
-        "envs/augustus.yaml"
+        os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
     log:
