@@ -1,14 +1,15 @@
 mandatory:
-  genome: ""
+  genome: "test/data/GRCh38.primary_assembly.chr22.fa"
   input: ""
-  outdir: ""
+  outdir: "test/results/chr22"
 optional:
   lineage: "eutheria_odb10"
   flanking_region: 1000
   test_size: 5000
+  name: "new_specie"
 resources:
   big:
-    cpus: 8
+    cpus: 5
     mem: 32G
     time: 24:00:00
   small:

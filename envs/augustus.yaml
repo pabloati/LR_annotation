@@ -1,0 +1,6 @@
+name: augustus
+channels:
+  - conda-forge
+dependencies:
+  - augustus
+prefix: /home/pabloati/miniforge3/envs/augustus

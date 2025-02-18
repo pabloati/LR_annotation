@@ -28,8 +28,8 @@ dir.scripts = os.path.join(workflow.basedir, "scripts")
 ### Output_dirs
 ## Ab_initio
 dir.out.ab_initio = os.path.join(dir.out.base, "ab_initio")
-dir.out.ab_initio.busco = os.path.join(dir.out.ab_initio, "busco")
-dir.out.ab_initio.augustus = os.path.join(dir.out.ab_initio, "augustus")
-dir.out.ab_initio.augustus_model = os.path.join(dir.out.ab_initio.augustus, "model")
-dir.out.ab_initio.augustus_training = os.path.join(dir.out.ab_initio.augustus, "training")
+dir.out.ab_busco = os.path.join(dir.out.ab_initio, "busco")
+dir.out.ab_augustus = os.path.join(dir.out.ab_initio, "augustus")
+dir.out.ab_augustus_model = os.path.join(dir.out.ab_augustus, "model")
+dir.out.ab_augustus_training = os.path.join(dir.out.ab_augustus, "training")
 ## IsoSeq3

@@ -7,6 +7,7 @@ gff with the gene names modified to be more informative
 '''
 
 import argparse
+import os
 
 def replace_last_tabs_with_space(line):
     # Split the line from the right based on "\t" delimiter
@@ -71,7 +72,7 @@ def main():
     l_genes = gene2list(snakemake.input[0])
     # Concatenate the gff files and produce the final gff
     gff_path = os.path.join(snakemake.input.busco_path,f"{snakemake.params.lineage}",
-                        "busco_sequences",f"{snakemake.params.gene_type}_copy_busco_sequences")
+                        "augustus_output","gff")
     out_path = snakemake.output[0]
     concatenate(l_genes, gff_path,out_path)
 

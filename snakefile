@@ -14,4 +14,4 @@ include: os.path.join("rules","ab_initio.smk")
 
 rule all:
     input:
-        "augustus_model/ab_initio_prediction.gtf"
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
