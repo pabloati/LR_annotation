@@ -28,7 +28,7 @@ rule busco_run:
     threads:
         config.resources.big.cpus
     log:
-        "logs/busco_run.log"
+        os.path.join(dir.logs,"busco_run.log")
     shell:
         """
         busco -i {input} -o {output} \
@@ -44,10 +44,12 @@ rule busco_gather:
     params:
         lineage = config.optional.lineage,
         gene_type = "single"
+    conda:
+        os.path.join(dir.env,"busco.yaml")
     log:
-        "logs/busco_gather.log"
+        os.path.join(dir.logs,"busco_gather.log")
     script:
-        "scripts/busco_complete_aa.py"
+        os.path.join(dir.scripts,"busco_complete_aa.py")
 
 rule clustering_busco_genes:
     input:
@@ -57,11 +59,12 @@ rule clustering_busco_genes:
     conda:
         os.path.join(dir.env,"busco.yaml")
     log:
-        "logs/clustering_busco_genes.log"
+        os.path.join(dir.logs,"clustering_busco_genes.log")
     shell:
         """
-        cd-hit -o complete_buscos.cdhit -c 0.8 -i {input} -p 1 -d 0 -T 4 -M 48000 &> {log}
-        grep ">" complete_buscos.cdhit | cut -f2 -d">" | cut -f1 > {output}
+        dir=$(dirname {output})
+        cd-hit -o $dir/complete_buscos.cdhit -c 0.8 -i {input} -p 1 -d 0 -T 4 -M 48000 &> {log}
+        grep ">" $dir/complete_buscos.cdhit | cut -f2 -d">" | cut -f1 > {output}
         """
 
 rule concatenate_gff:
@@ -76,9 +79,9 @@ rule concatenate_gff:
         lineage = config.optional.lineage,
         gene_type = "single"
     log:
-        "logs/concatenate_gff.log"
+        os.path.join(dir.logs,"concatenate_gff.log")
     script:
-        "scripts/concatenate_GFF.py"
+        os.path.join(dir.scripts,"concatenate_GFF.py")
 
 rule gtf2genbank:
     input:
@@ -91,7 +94,7 @@ rule gtf2genbank:
     params:
         flanking_region = config.optional.flanking_region
     log:
-        "logs/gtf2genbank.log"
+        os.path.join(dir.logs,"gtf2genbank.log")
     shell:
         """
         gff2gbSmallDNA.pl {input.gff} {input.genome} {params.flanking_region} {output} &> {log}
@@ -106,9 +109,9 @@ rule generate_subsets:
         size = config.optional.test_size,
         seed = 123
     log:
-        "logs/generate_subset.log"
+        os.path.join(dir.logs,"generate_subset.log")
     script:
-        "scripts/generate_subsets.py"
+        os.path.join(dir.scripts,"generate_subset.py")
 
 # TODO: Skip this rule if the directory of the new species exist
 # TODO: Change the done path to be to a specific directory for the "check files"
@@ -120,11 +123,15 @@ rule new_species:
     conda:
         os.path.join(dir.env,"augustus.yaml")
     params:
-        name = config.optional.species_name
+        name = config.optional.species_name,
+        augustus_dir = os.environ.get("AUGUSTUS_CONFIG_PATH")
     log:
-        "logs/new_species.log"
+        os.path.join(dir.logs,"new_species.log")
     shell:
-        "new_species.pl --species={params.name} &> {log}"
+        """
+        rm -rf {params.augustus_dir}/species/{params.name}
+        new_species.pl --species={params.name} &> {log}
+        """
 
 rule initial_etraining:
     input:
@@ -137,7 +144,7 @@ rule initial_etraining:
     params:
         name = config.optional.species_name
     log:
-        "logs/initial_etraining.log"
+        os.path.join(dir.logs,"initial_etraining.log")
     shell:
         "etraining --species={params.name} {input.gb} &> {output}"
 
@@ -146,10 +153,8 @@ rule identify_bad_genes:
         training = os.path.join(dir.out.ab_augustus_training,"etrain.out")
     output:
         bad = os.path.join(dir.out.ab_augustus_training,"bad.lst")
-    log:
-        "logs/identify_bad_genes.log"
     shell:
-        "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output} &> {log}"
+        "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output}"
 
 rule filter_genes:
     input:
@@ -159,10 +164,8 @@ rule filter_genes:
         filt = os.path.join(dir.out.ab_augustus_training,"filtered.gb")
     conda:
         os.path.join(dir.env,"augustus.yaml")
-    log:
-        "logs/filter_genes.log"
     shell:
-        "filterGenes.pl {input.bad_list} {input.gb} > {output} &> {log}"
+        "filterGenes.pl {input.bad_list} {input.gb} > {output}"
 
 rule retrain:
     input:
@@ -173,20 +176,16 @@ rule retrain:
         os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
-    log:
-        "logs/retrain.log"
     shell:
-        "etraining --species={params.name} {input} &> {log}"
+        "etraining --species={params.name} {input} > {output}"
 
 rule extract_stop_codon_freq:
     input:
         train = os.path.join(dir.out.ab_augustus_training,"etrain_filtered.out")
     output:
         train = os.path.join(dir.out.ab_augustus_training,"SC_freq.txt")
-    log:
-        "logs/extract_stop_codon_freq.log"
     shell:
-        "tail -6 {input} | head -3 > {output} &> {log}"
+        "tail -6 {input} | head -3 > {output}"
 
 # TODO: Rewrite this rule to be adapted to snakemake nature. It creates a new file and then substitutes the frequency one.
 # TODO: Find a way to give the shell variable AUGUSUTUS_CONFIG_PATH directly to the file
@@ -196,19 +195,18 @@ rule modify_stop_codon_freq:
     output:
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
     params:
-        name = config.optional.species_name,
-        augustus = os.environ.get("AUGUSTUS_CONFIG_PATH")
+        name = config.optional.species_name
     conda:
         os.path.join(dir.env,"augustus.yaml")
     log:
-        "logs/modify_stop_codon_freq.log"
+        os.path.join(dir.logs,"modify_stop_codon_freq.log")
     script:
-        "scripts/modify_SC_freq.py"
+        os.path.join(dir.scripts,"modify_SC_freq.py")
 
 # TODO: Is there any way to increase augustus usage to >1 core?
 rule run_augustus:
     input:
-        chr19 = config.required.chr19,
+        genome = config.required.genome,
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
     output:
         gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
@@ -217,6 +215,6 @@ rule run_augustus:
     params:
         name = config.optional.species_name
     log:
-        "logs/run_augustus.log"
+        os.path.join(dir.logs,"run_augustus.log")
     shell:
-        "augustus --species={params.name} {input.chr19} --protein=off > {output} &> {log}"
+        "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"

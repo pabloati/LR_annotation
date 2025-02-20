@@ -7,7 +7,7 @@ optional:
   lineage: "eutheria_odb10"
   flanking_region: 1000
   test_size: 5000
-  name: "new_specie"
+  species_name: "new_specie"
 resources:
   big:
     cpus: 5

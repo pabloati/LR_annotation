@@ -25,6 +25,8 @@ dir.env = os.path.join(workflow.basedir, "envs")
 dir.rules = os.path.join(workflow.basedir, "rules")
 dir.scripts = os.path.join(workflow.basedir, "scripts")
 
+dir.logs = os.path.join(dir.out.base, "logs")
+
 ### Output_dirs
 ## Ab_initio
 dir.out.ab_initio = os.path.join(dir.out.base, "ab_initio")

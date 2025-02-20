@@ -35,7 +35,7 @@ def gene2list(gene_file: str)-> list:
     return l_genes
 
 
-def concatenate(l_genes, path):
+def concatenate(l_genes, path,out_file):
     '''
     Function that reads a list of gene id, open their corresponding gff,
     replace the name of the gene and transcript with the orthoDB id and 
@@ -43,7 +43,7 @@ def concatenate(l_genes, path):
     '''
     anot_fild = 2
     # Open the output file
-    f_out = open("complete.gff", "w")
+    f_out = open(out_file, "w")
     # Read the genes in the list
     for gen in l_genes:
         # Write the gff of the gene
@@ -71,7 +71,7 @@ def main():
     # Get the list of genes
     l_genes = gene2list(snakemake.input[0])
     # Concatenate the gff files and produce the final gff
-    gff_path = os.path.join(snakemake.input.busco_path,f"{snakemake.params.lineage}",
+    gff_path = os.path.join(snakemake.input.busco_path,f"run_{snakemake.params.lineage}",
                         "augustus_output","gff")
     out_path = snakemake.output[0]
     concatenate(l_genes, gff_path,out_path)

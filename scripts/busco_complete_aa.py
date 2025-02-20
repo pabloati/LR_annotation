@@ -12,7 +12,7 @@ import argparse
 
 
 def main():
-    path = os.path.join(snakemake.input[0],f"{snakemake.params.lineage}",
+    path = os.path.join(snakemake.input[0],f"run_{snakemake.params.lineage}",
                         "busco_sequences",f"{snakemake.params.gene_type}_copy_busco_sequences")
     outfile = snakemake.output[0]
     # The BUSCO output is a individual fasta for each gene that was found in the 
