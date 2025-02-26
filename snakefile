@@ -8,10 +8,11 @@ config = ap.AttrMap(config)
 include: os.path.join("rules","setup","directories.smk")
 
 
-include: os.path.join("rules","isoannot.smk")
+include: os.path.join("rules","isoseq.smk")
 
 include: os.path.join("rules","ab_initio.smk")
 
 rule all:
     input:
-        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf"),
+        expand(os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq"),sample=samples)
