@@ -12,7 +12,8 @@ include: os.path.join("rules","isoseq.smk")
 
 include: os.path.join("rules","ab_initio.smk")
 
+include: os.path.join("rules","hints.smk")
+
 rule all:
     input:
-        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf"),
-        expand(os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq"),sample=samples)
+        expand(os.path.join(dir.out.sqanti,"{sample}","{sample}_classification.txt"),sample=samples)

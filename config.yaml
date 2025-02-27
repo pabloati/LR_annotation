@@ -14,7 +14,7 @@ resources:
     mem: 32G
     time: 24:00:00
   small:
-    cpus: 4
+    cpus: 2
     mem: 16G
     time: 12:00:00
   

@@ -26,6 +26,8 @@ rule lima:
     params:
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
+    threads:
+        config.resources.small.cpus
     shell:
         """
         lima {input} {params.primers} {output.name} \
@@ -44,6 +46,8 @@ rule lima_renaming:
         samples = config.isoseq.primers_to_samples
     conda:
         f"{dir.env}/isoseq.yaml"
+    threads:
+        config.resources.small.cpus
     script:
         f"{dir.scripts}/rename_lima_output.py"    
     
@@ -58,6 +62,8 @@ rule refine:
         f"{dir.env}/isoseq.yaml"
     params:
         primers = config.isoseq.primers
+    threads:
+        config.resources.small.cpus
     shell:
         """
         isoseq3 refine --require-polya {input.lima} {params.primers} {output}
@@ -70,6 +76,8 @@ rule cluster:
         bam=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
     conda:
         f"{dir.env}/isoseq.yaml"
+    threads:
+        config.resources.small.cpus
     shell:
         """
         isoseq3 cluster {input} {output.bam} --use-qvs
@@ -82,6 +90,8 @@ rule bam2fastq:
         os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq")
     conda:
         f"{dir.env}/isoseq.yaml"
+    threads:
+        config.resources.small.cpus
     shell:
         """
         samtools fastq {input} > {output}
@@ -92,35 +102,31 @@ rule mapping_reads:
         reads=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq"),
         genome = config.required.genome
     output:
-        os.path.join(dir.out.isoseq_mapping,"{sample}.mapping.sam"),
+        os.path.join(dir.out.isoseq_mapping,"{sample}.mapping.bam"),
     conda:
         f"{dir.env}/minimap2.yaml"
+    threads:
+        config.resources.big.cpus
     shell:
         """
-        minimap2 -ax splice  -uf --secondary=no -C5 {input.genome} {input.reads} | sort -k 3,3 -k 4,4n > {output}
+        minimap2 -ax splice -t {threads} -uf --secondary=no -C5 {input.genome} {input.reads} | samtools sort |  samtools view -bS > {output}
         """
 
 rule collapse_isoforms:
     input:
-        os.path.join(dir.out.isoseq_mapping,"{sample}.mapping.sam"),
-        isoforms=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
+        mapped = os.path.join(dir.out.isoseq_mapping,"{sample}.mapping.bam"),
+        flnc = os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
     output:
-        "results/isoannot/{sample}.collapsed"
+        os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff"),
     conda:
         f"{dir.env}/isoseq.yaml"
-    script:
-        "scripts/collapse_isoforms_by_sam.py"
+    threads:
+        config.resources.small.cpus
+    shell:
+        """
+        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads}
+        """
     
-rule count_reads:
-    input:
-        "results/isoannot/{sample}.collapsed"
-    output:
-        "results/isoannot/polished.cluster_report.csv"
-    conda:
-        f"{dir.env}/isoseq.yaml"
-    script:
-        "scripts/get_abundance_post_collapse.py"
-
 rule filter_transcripts:
     input:
         "results/isoannot/{sample}.collapsed"
