@@ -155,16 +155,16 @@ rule collapse_isoforms:
         isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads}
         """
     
-rule filter_transcripts:
-    input:
-        "results/isoannot/{sample}.collapsed"
-    output:
-        "results/isoannot/{sample}.filtered"
-    conda:
-        f"{dir.env}/isoseq.yaml"
-    resources:
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        time = config.resources.small.time
-    script:
-        f"{dir.env}/filter_by_count.py"
+# rule filter_transcripts:
+#     input:
+#         "results/isoannot/{sample}.collapsed"
+#     output:
+#         "results/isoannot/{sample}.filtered"
+#     conda:
+#         f"{dir.env}/isoseq.yaml"
+#     resources:
+#         cpus_per_task = config.resources.small.cpus,
+#         mem = config.resources.small.mem,
+#         time = config.resources.small.time
+#     script:
+#         f"{dir.env}/filter_by_count.py"
