@@ -31,7 +31,7 @@ rule lima:
     resources:
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.mem,
-        time = config.resources.big.time
+        runtime =  config.resources.big.time
     shell:
         """
         lima {input} {params.primers} {output.name} \
@@ -55,7 +55,7 @@ rule lima_renaming:
     resources:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        time = config.resources.small.time
+        runtime =  config.resources.small.time
     script:
         f"{dir.scripts}/rename_lima_output.py"    
     
@@ -75,7 +75,7 @@ rule refine:
     resources:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        time = config.resources.small.time
+        runtime =  config.resources.small.time
     shell:
         """
         isoseq3 refine --require-polya {input.lima} {params.primers} {output}
@@ -93,7 +93,7 @@ rule cluster:
     resources:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        time = config.resources.small.time
+        runtime =  config.resources.small.time
     shell:
         """
         isoseq3 cluster {input} {output.bam} --use-qvs
@@ -111,7 +111,7 @@ rule bam2fastq:
     resources:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        time = config.resources.small.time
+        runtime =  config.resources.small.time
     shell:
         """
         samtools fastq {input} > {output}
@@ -130,7 +130,7 @@ rule mapping_reads:
     resources:
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.mem,
-        time = config.resources.big.time
+        runtime =  config.resources.big.time
     shell:
         """
         minimap2 -ax splice -t {threads} -uf --secondary=no -C5 {input.genome} {input.reads} | samtools sort |  samtools view -bS > {output}
@@ -149,7 +149,7 @@ rule collapse_isoforms:
     resources:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        time = config.resources.small.time
+        runtime =  config.resources.small.time
     shell:
         """
         isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads}
@@ -165,6 +165,6 @@ rule collapse_isoforms:
 #     resources:
 #         cpus_per_task = config.resources.small.cpus,
 #         mem = config.resources.small.mem,
-#         time = config.resources.small.time
+#         runtime =  config.resources.small.time
 #     script:
 #         f"{dir.env}/filter_by_count.py"
