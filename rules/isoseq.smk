@@ -29,7 +29,7 @@ rule lima:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.big.qos,
+        qos = config.resources.big.qos,
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
@@ -54,7 +54,7 @@ rule lima_renaming:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
@@ -75,7 +75,7 @@ rule refine:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
@@ -94,7 +94,7 @@ rule cluster:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
@@ -113,7 +113,7 @@ rule bam2fastq:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
@@ -133,7 +133,7 @@ rule mapping_reads:
     threads:
         config.resources.big.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
@@ -153,7 +153,7 @@ rule collapse_isoforms:
     threads:
         config.resources.small.cpus,
     resources:
-		qos = config.resources.small.qos,
+        qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
