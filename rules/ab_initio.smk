@@ -1,4 +1,7 @@
 # Snakefile for ab initio gene prediction
+
+# Setup local rules (do not require much resources)
+localrules: new_species, identify_bad_genes, extract_stop_codon_freq
 #TODO: move to a module
 def calculate_gene_number(file_path):
     count = 0
@@ -25,6 +28,10 @@ rule busco_run:
     params:
         busco_dir = config.optional.busco_downloads,
         lineage = config.optional.lineage
+    resources:
+        cpus_per_task = config.resources.busco.cpus
+        mem = config.resources.busco.mem
+        time = config.resources.busco.time
     threads:
         config.resources.big.cpus
     log:
@@ -44,6 +51,10 @@ rule busco_gather:
     params:
         lineage = config.optional.lineage,
         gene_type = "single"
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     conda:
         os.path.join(dir.env,"busco.yaml")
     log:
@@ -60,6 +71,10 @@ rule clustering_busco_genes:
         os.path.join(dir.env,"busco.yaml")
     log:
         os.path.join(dir.logs,"clustering_busco_genes.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         """
         dir=$(dirname {output})
@@ -80,6 +95,10 @@ rule concatenate_gff:
         gene_type = "single"
     log:
         os.path.join(dir.logs,"concatenate_gff.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     script:
         os.path.join(dir.scripts,"concatenate_GFF.py")
 
@@ -95,6 +114,10 @@ rule gtf2genbank:
         flanking_region = config.optional.flanking_region
     log:
         os.path.join(dir.logs,"gtf2genbank.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         """
         gff2gbSmallDNA.pl {input.gff} {input.genome} {params.flanking_region} {output} &> {log}
@@ -110,6 +133,10 @@ rule generate_subsets:
         seed = 123
     log:
         os.path.join(dir.logs,"generate_subset.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     script:
         os.path.join(dir.scripts,"generate_subset.py")
 
@@ -127,6 +154,10 @@ rule new_species:
         augustus_dir = os.environ.get("AUGUSTUS_CONFIG_PATH")
     log:
         os.path.join(dir.logs,"new_species.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         """
         rm -rf {params.augustus_dir}/species/{params.name}
@@ -145,6 +176,10 @@ rule initial_etraining:
         name = config.optional.species_name
     log:
         os.path.join(dir.logs,"initial_etraining.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         "etraining --species={params.name} {input.gb} &> {output}"
 
@@ -153,6 +188,10 @@ rule identify_bad_genes:
         training = os.path.join(dir.out.ab_augustus_training,"etrain.out")
     output:
         bad = os.path.join(dir.out.ab_augustus_training,"bad.lst")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output}"
 
@@ -164,6 +203,10 @@ rule filter_genes:
         filt = os.path.join(dir.out.ab_augustus_training,"filtered.gb")
     conda:
         os.path.join(dir.env,"augustus.yaml")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         "filterGenes.pl {input.bad_list} {input.gb} > {output}"
 
@@ -176,6 +219,10 @@ rule retrain:
         os.path.join(dir.env,"augustus.yaml")
     params:
         name = config.optional.species_name
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     shell:
         "etraining --species={params.name} {input} > {output}"
 
@@ -200,6 +247,10 @@ rule modify_stop_codon_freq:
         os.path.join(dir.env,"augustus.yaml")
     log:
         os.path.join(dir.logs,"modify_stop_codon_freq.log")
+    resources:
+        cpus_per_task = config.resources.small.cpus
+        mem = config.resources.small.mem
+        time = config.resources.small.time
     script:
         os.path.join(dir.scripts,"modify_SC_freq.py")
 
@@ -216,5 +267,9 @@ rule run_augustus:
         name = config.optional.species_name
     log:
         os.path.join(dir.logs,"run_augustus.log")
+    resources:
+        cpus_per_task = config.resources.big.cpus
+        mem = config.resources.big.mem
+        time = config.resources.big.time
     shell:
         "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"
