@@ -29,6 +29,7 @@ rule busco_run:
         busco_dir = config.optional.busco_downloads,
         lineage = config.optional.lineage
     resources:
+		qos = config.resources.busco.qos,
         cpus_per_task = config.resources.busco.cpus,
         mem = config.resources.busco.cpus,
         runtime =  config.resources.busco.time
@@ -52,6 +53,7 @@ rule busco_gather:
         lineage = config.optional.lineage,
         gene_type = "single"
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -72,6 +74,7 @@ rule clustering_busco_genes:
     log:
         os.path.join(dir.logs,"clustering_busco_genes.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -96,6 +99,7 @@ rule concatenate_gff:
     log:
         os.path.join(dir.logs,"concatenate_gff.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -115,6 +119,7 @@ rule gtf2genbank:
     log:
         os.path.join(dir.logs,"gtf2genbank.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -134,6 +139,7 @@ rule generate_subsets:
     log:
         os.path.join(dir.logs,"generate_subset.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -155,6 +161,7 @@ rule new_species:
     log:
         os.path.join(dir.logs,"new_species.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -177,6 +184,7 @@ rule initial_etraining:
     log:
         os.path.join(dir.logs,"initial_etraining.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -189,6 +197,7 @@ rule identify_bad_genes:
     output:
         bad = os.path.join(dir.out.ab_augustus_training,"bad.lst")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -204,6 +213,7 @@ rule filter_genes:
     conda:
         os.path.join(dir.env,"augustus.yaml")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -220,6 +230,7 @@ rule retrain:
     params:
         name = config.optional.species_name
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -248,6 +259,7 @@ rule modify_stop_codon_freq:
     log:
         os.path.join(dir.logs,"modify_stop_codon_freq.log")
     resources:
+		qos = config.resources.small.qos,
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.cpus,
         runtime =  config.resources.small.time
@@ -268,6 +280,7 @@ rule run_augustus:
     log:
         os.path.join(dir.logs,"run_augustus.log")
     resources:
+		qos = config.resources.big.qos,
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.cpus,
         runtime =  config.resources.big.time
