@@ -4,6 +4,7 @@ import attrmap as ap
 configfile: os.path.join(workflow.basedir, "config.yaml")
 config = ap.AttrMap(config)
 
+localrules: all
 # Setup rules
 include: os.path.join("rules","setup","directories.smk")
 

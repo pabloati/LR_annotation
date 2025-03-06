@@ -27,10 +27,10 @@ rule lima:
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.big.cpus
-        mem = config.resources.big.mem
+        cpus_per_task = config.resources.big.cpus,
+        mem = config.resources.big.mem,
         time = config.resources.big.time
     shell:
         """
@@ -45,16 +45,16 @@ rule lima_renaming:
         os.path.join(dir.out.isoseq_lima,"fl.json")
     output:
         touch(os.path.join(dir.out.isoseq_lima,"renamed.done")),
-        expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples)
+        expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples),
     params:
         samples = config.isoseq.primers_to_samples
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     script:
         f"{dir.scripts}/rename_lima_output.py"    
@@ -71,10 +71,10 @@ rule refine:
     params:
         primers = config.isoseq.primers
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     shell:
         """
@@ -89,10 +89,10 @@ rule cluster:
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     shell:
         """
@@ -107,10 +107,10 @@ rule bam2fastq:
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     shell:
         """
@@ -126,10 +126,10 @@ rule mapping_reads:
     conda:
         f"{dir.env}/minimap2.yaml"
     threads:
-        config.resources.big.cpus
+        config.resources.big.cpus,
     resources:
-        cpus_per_task = config.resources.big.cpus
-        mem = config.resources.big.mem
+        cpus_per_task = config.resources.big.cpus,
+        mem = config.resources.big.mem,
         time = config.resources.big.time
     shell:
         """
@@ -145,10 +145,10 @@ rule collapse_isoforms:
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     shell:
         """
@@ -163,8 +163,8 @@ rule filter_transcripts:
     conda:
         f"{dir.env}/isoseq.yaml"
     resources:
-        cpus_per_task = config.resources.small.cpus
-        mem = config.resources.small.mem
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         time = config.resources.small.time
     script:
         f"{dir.env}/filter_by_count.py"
