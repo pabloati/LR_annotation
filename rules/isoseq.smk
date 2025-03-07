@@ -26,8 +26,10 @@ rule lima:
     params:
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
+    log:
+        os.path.join(dir.log,"lima_demultiplexing.log")
     threads:
-        config.resources.small.cpus,
+        config.resources.big.cpus,
     resources:
         slurm_extra = f"'--qos={config.resources.big.qos}'",
         cpus_per_task = config.resources.big.cpus,
@@ -37,7 +39,7 @@ rule lima:
         """
         lima {input} {params.primers} {output.name} \
             --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
-            --split-named --biosample-csv {params.samples}
+            --split-named --biosample-csv {params.samples} &> {log}
         touch {output}
         """
 
@@ -70,6 +72,8 @@ rule refine:
         os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_refine_{sample}.log")
     params:
         primers = config.isoseq.primers
     threads:
@@ -81,7 +85,7 @@ rule refine:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 refine --require-polya {input.lima} {params.primers} {output}
+        isoseq3 refine --require-polya {input.lima} {params.primers} {output} &> {log}
         """
 
 rule cluster:
@@ -91,6 +95,8 @@ rule cluster:
         bam=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_cluster_{sample}.log")
     threads:
         config.resources.small.cpus,
     resources:
@@ -100,7 +106,7 @@ rule cluster:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 cluster {input} {output.bam} --use-qvs
+        isoseq3 cluster {input} {output.bam} --use-qvs &> {log}
         """
 
 rule bam2fastq:
@@ -150,6 +156,8 @@ rule collapse_isoforms:
         os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff"),
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_collapse_{sample}.log")
     threads:
         config.resources.small.cpus,
     resources:
@@ -159,7 +167,7 @@ rule collapse_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads}
+        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads} &> {log}
         """
     
 # rule filter_transcripts:
