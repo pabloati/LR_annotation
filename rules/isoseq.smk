@@ -27,7 +27,7 @@ rule lima:
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
     log:
-        os.path.join(dir.log,"lima_demultiplexing.log")
+        os.path.join(dir.logs,"lima_demultiplexing.log")
     threads:
         config.resources.big.cpus,
     resources:
