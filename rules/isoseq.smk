@@ -115,7 +115,7 @@ rule bam2fastq:
     output:
         os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq")
     conda:
-        f"{dir.env}/isoseq.yaml"
+        f"{dir.env}/minimap2.yaml"
     threads:
         config.resources.small.cpus,
     resources:
