@@ -102,7 +102,7 @@ rule cluster:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
+        mem = config.resources.small_bigMem.mem,
         runtime =  config.resources.small.time
     shell:
         """

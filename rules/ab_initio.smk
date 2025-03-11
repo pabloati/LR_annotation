@@ -31,10 +31,10 @@ rule busco_run:
     resources:
         slurm_extra = f"'--qos={config.resources.busco.qos}'",
         cpus_per_task = config.resources.busco.cpus,
-        mem = config.resources.busco.cpus,
+        mem = config.resources.busco.mem,
         runtime =  config.resources.busco.time
     threads:
-        config.resources.big.cpus,
+        config.resources.busco.cpus,
     log:
         os.path.join(dir.logs,"busco_run.log")
     shell:
