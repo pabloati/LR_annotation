@@ -53,7 +53,7 @@ rule filter_isoforms:
     conda:
         os.path.join(dir.env,"sqanti3.yaml")
     log:
-        os.path.join(dir.logs,"filter_sqanti.log")
+        os.path.join(dir.logs,"filter_sqanti_{sample}.log")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
