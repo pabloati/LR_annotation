@@ -43,4 +43,4 @@ rule filter_isoforms:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
-        f"{dir.scripts}/filterClassifications.py"
+        f"{dir.scripts}/filterClassifications.R"
