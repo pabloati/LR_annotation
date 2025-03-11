@@ -37,5 +37,10 @@ rule filter_isoforms:
         os.path.join(dir.out.sqanti_filtered,"{sample}","{sample}_filtered_classification.txt")
     conda:
         f"{dir.env}/sqanti3.yaml"
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
     script:
-        f"{dir.script}/filterClassifications.py"
+        f"{dir.scripts}/filterClassifications.py"
