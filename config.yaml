@@ -10,15 +10,22 @@ optional:
   species_name: "new_specie"
 resources:
   big:
-    cpus: 5
+    cpus: 10
     mem: 32G
     time: 24:00:00
+    qos: long
   busco:
     cpus: 40
     mem: 64G
     time: 240:00:00
+    qos: long
+  medium:
+    cpus: 8
+    mem: 16G
+    time: 8:00:00
   small:
     cpus: 2
     mem: 8G
-    time: 12:00:00
+    time: 2:00:00
+    qos: short
   
