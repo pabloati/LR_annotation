@@ -26,13 +26,20 @@ rule lima:
     params:
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
+    log:
+        os.path.join(dir.logs,"lima_demultiplexing.log")
     threads:
-        config.resources.small.cpus
+        config.resources.big.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.big.qos}'",
+        cpus_per_task = config.resources.big.cpus,
+        mem = config.resources.big.mem,
+        runtime =  config.resources.big.time
     shell:
         """
         lima {input} {params.primers} {output.name} \
             --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
-            --split-named --biosample-csv {params.samples}
+            --split-named --biosample-csv {params.samples} &> {log}
         touch {output}
         """
 
@@ -41,13 +48,18 @@ rule lima_renaming:
         os.path.join(dir.out.isoseq_lima,"fl.json")
     output:
         touch(os.path.join(dir.out.isoseq_lima,"renamed.done")),
-        expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples)
+        expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples),
     params:
         samples = config.isoseq.primers_to_samples
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
     script:
         f"{dir.scripts}/rename_lima_output.py"    
     
@@ -60,13 +72,20 @@ rule refine:
         os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_refine_{sample}.log")
     params:
         primers = config.isoseq.primers
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 refine --require-polya {input.lima} {params.primers} {output}
+        isoseq3 refine --require-polya {input.lima} {params.primers} {output} &> {log}
         """
 
 rule cluster:
@@ -76,11 +95,18 @@ rule cluster:
         bam=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_cluster_{sample}.log")
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small_bigMem.mem,
+        runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 cluster {input} {output.bam} --use-qvs
+        isoseq3 cluster {input} {output.bam} --use-qvs &> {log}
         """
 
 rule bam2fastq:
@@ -89,9 +115,14 @@ rule bam2fastq:
     output:
         os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq")
     conda:
-        f"{dir.env}/isoseq.yaml"
+        f"{dir.env}/minimap2.yaml"
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
     shell:
         """
         samtools fastq {input} > {output}
@@ -106,7 +137,12 @@ rule mapping_reads:
     conda:
         f"{dir.env}/minimap2.yaml"
     threads:
-        config.resources.big.cpus
+        config.resources.big.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.big.cpus,
+        mem = config.resources.big.mem,
+        runtime =  config.resources.big.time
     shell:
         """
         minimap2 -ax splice -t {threads} -uf --secondary=no -C5 {input.genome} {input.reads} | samtools sort |  samtools view -bS > {output}
@@ -120,19 +156,31 @@ rule collapse_isoforms:
         os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff"),
     conda:
         f"{dir.env}/isoseq.yaml"
+    log:
+        os.path.join(dir.logs,"isoseq_collapse_{sample}.log")
     threads:
-        config.resources.small.cpus
+        config.resources.small.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
     shell:
         """
-        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads}
+        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads} &> {log}
         """
     
-rule filter_transcripts:
-    input:
-        "results/isoannot/{sample}.collapsed"
-    output:
-        "results/isoannot/{sample}.filtered"
-    conda:
-        f"{dir.env}/isoseq.yaml"
-    script:
-        "scripts/filter_by_count.py"
+# rule filter_transcripts:
+#     input:
+#         "results/isoannot/{sample}.collapsed"
+#     output:
+#         "results/isoannot/{sample}.filtered"
+#     conda:
+#         f"{dir.env}/isoseq.yaml"
+#     resources:
+#           slurm_extra = f"'--qos={config.resources.small.qos}'",
+#         cpus_per_task = config.resources.small.cpus,
+#         mem = config.resources.small.mem,
+#         runtime =  config.resources.small.time
+#     script:
+#         f"{dir.env}/filter_by_count.py"
