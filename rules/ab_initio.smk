@@ -55,7 +55,7 @@ rule busco_gather:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     conda:
         os.path.join(dir.env,"busco.yaml")
@@ -76,7 +76,7 @@ rule clustering_busco_genes:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         """
@@ -101,7 +101,7 @@ rule concatenate_gff:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
         os.path.join(dir.scripts,"concatenate_GFF.py")
@@ -121,7 +121,7 @@ rule gtf2genbank:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         """
@@ -141,7 +141,7 @@ rule generate_subsets:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
         os.path.join(dir.scripts,"generate_subset.py")
@@ -163,7 +163,7 @@ rule new_species:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         """
@@ -186,7 +186,7 @@ rule initial_etraining:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         "etraining --species={params.name} {input.gb} &> {output}"
@@ -199,7 +199,7 @@ rule identify_bad_genes:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         "grep 'in sequence' {input} | cut -f7 -d' ' | sed s/://g | sort -u > {output}"
@@ -215,7 +215,7 @@ rule filter_genes:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         "filterGenes.pl {input.bad_list} {input.gb} > {output}"
@@ -232,7 +232,7 @@ rule retrain:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
         "etraining --species={params.name} {input} > {output}"
@@ -261,7 +261,7 @@ rule modify_stop_codon_freq:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.cpus,
+        mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
         os.path.join(dir.scripts,"modify_SC_freq.py")
@@ -282,7 +282,7 @@ rule run_augustus:
     resources:
         slurm_extra = f"'--qos={config.resources.big.qos}'",
         cpus_per_task = config.resources.big.cpus,
-        mem = config.resources.big.cpus,
+        mem = config.resources.big.mem,
         runtime =  config.resources.big.time
     shell:
         "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"

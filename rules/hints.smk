@@ -23,9 +23,19 @@ rule run_sqanti:
     resources:
         slurm_extra = f"'--qos={config.resources.medium.qos}'",
         cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.medium.cpus,
+        mem = config.resources.medium.mem,
         runtime =  config.resources.medium.time
     shell:
         """
         sqanti_qc.py {input.isoforms} {input.ab_initio_gff} {input.ref_genome} --dir $(basename {output}) --prefix {wildcards.sample}
         """
+
+rule filter_isoforms:
+    input:
+        os.path.join(dir.out.sqanti,"{sample}","{sample}_classification.txt")
+    output:
+        os.path.join(dir.out.sqanti_filtered,"{sample}","{sample}_filtered_classification.txt")
+    conda:
+        f"{dir.env}/sqanti3.yaml"
+    script:
+        f"{dir.script}/filterClassifications.py"
