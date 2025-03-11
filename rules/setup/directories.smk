@@ -45,3 +45,4 @@ dir.out.isoseq_collapsed = os.path.join(dir.out.isoseq, "collapsed")
 
 ## Hints
 dir.out.sqanti = os.path.join(dir.out.base, "sqanti")
+dir.out.sqanti_filtered = os.path.join(dir.out.sqanti, "filtered")

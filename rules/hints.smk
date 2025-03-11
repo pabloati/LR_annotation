@@ -30,17 +30,34 @@ rule run_sqanti:
         sqanti_qc.py {input.isoforms} {input.ab_initio_gff} {input.ref_genome} --dir $(basename {output}) --prefix {wildcards.sample}
         """
 
+# rule filter_isoforms:
+#     input:
+#         os.path.join(dir.out.sqanti,"{sample}","{sample}_classification.txt")
+#     output:
+#         os.path.join(dir.out.sqanti_filtered,"{sample}","{sample}_filtered_classification.txt")
+#     conda:
+#         f"{dir.env}/sqanti3.yaml"
+#     resources:
+#         slurm_extra = f"'--qos={config.resources.small.qos}'",
+#         cpus_per_task = config.resources.small.cpus,
+#         mem = config.resources.small.mem,
+#         runtime =  config.resources.small.time
+#     script:
+#         f"{dir.scripts}/filterClassifications.R"
+
 rule filter_isoforms:
     input:
         os.path.join(dir.out.sqanti,"{sample}","{sample}_classification.txt")
     output:
-        os.path.join(dir.out.sqanti_filtered,"{sample}","{sample}_filtered_classification.txt")
+        os.path.join(dir.out.sqanti_filtered,"{sample}_classification.filt.txt")
     conda:
-        f"{dir.env}/sqanti3.yaml"
+        os.path.join(dir.env,"sqanti3.yaml")
+    log:
+        os.path.join(dir.logs,"filter_sqanti.log")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
-        f"{dir.scripts}/filterClassifications.R"
+        os.path.join(dir.scripts,"filterClassifications.R")
