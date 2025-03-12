@@ -25,9 +25,14 @@ dir.env = os.path.join(workflow.basedir, "envs")
 dir.rules = os.path.join(workflow.basedir, "rules")
 dir.scripts = os.path.join(workflow.basedir, "scripts")
 
-dir.logs = os.path.join(dir.out.base, "logs")
+### Tools directories
+dir.tools = os.path.join(config.required.toolsdir)
+dir.tools_conda = os.path.join(dir.tools, "conda_envs")
+dir.tools_tama = os.path.join(dir.tools, "tama")
+
 
 ### Output_dirs
+dir.logs = os.path.join(dir.out.base, "logs")
 ## Ab_initio
 dir.out.ab_initio = os.path.join(dir.out.base, "ab_initio")
 dir.out.ab_busco = os.path.join(dir.out.ab_initio, "busco")
