@@ -1,6 +1,4 @@
-with open(config.isoseq.primers_to_samples) as f:
-    samples = [line.strip().split(",")[1] for line in f.readlines()[1:]]
-    barcodes = [line.strip().split(",")[0] for line in f.readlines()[1:]]
+
 if config.isoseq.subreads:
     rule consensus_calling:
         input:
@@ -85,7 +83,7 @@ rule refine:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 refine --require-polya {input.lima} {params.primers} {output} &> {log}
+        isoseq refine --require-polya {input.lima} {params.primers} {output} &> {log}
         """
 
 rule cluster:
@@ -106,7 +104,7 @@ rule cluster:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq3 cluster {input} {output.bam} --use-qvs &> {log}
+        isoseq cluster2 {input} {output.bam} &> {log}
         """
 
 rule bam2fastq:

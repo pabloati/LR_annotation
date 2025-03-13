@@ -5,4 +5,3 @@ channels:
 dependencies:
   - isoseq
   - lima
-prefix: /home/pabloati/miniforge3/envs/isoseq

@@ -19,7 +19,7 @@ def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm):
     config = load_configfile(conf)
     sf = get_snakefile()
     conda_prefix = os.path.join(config["required"].get('toolsdir', None),"conda_envs")
-    cmd = f'snakemake -s {sf} --configfile {conf} --use-conda --conda-prefix {conda_prefix} -j {jobs}'
+    cmd = f'snakemake all -s {sf} --configfile {conf} --use-conda --conda-prefix {conda_prefix} -j {jobs}'
     if dryrun:
         cmd += ' -n'
     if unlock:

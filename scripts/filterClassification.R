@@ -41,6 +41,6 @@ main_gtf %>% rowwise() %>%
   mutate(transcript_id = gsub("transcript_id ","", strsplit(attributes,";")[[1]][1])) %>%
   filter(transcript_id %in% filtered_clasification$isoform) %>%
   select(-transcript_id) %>%
-  write.table(file = gtf_out, row.names = F, quote = F, sep = "\t")
+  write.table(file = gtf_out, row.names = F, sep = "\t",header = F)
 
 

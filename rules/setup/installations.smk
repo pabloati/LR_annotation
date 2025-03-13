@@ -1,9 +1,9 @@
 
 rule install_tama:
     output:
-        os.path.join(dir.tools_tama,"tama_installed.done")
+        touch(os.path.join(dir.tools_tama,"tama_installed.done"))
     shell:
         """
-        git clone https://github.com/GenomeRIK/tama.git {dir.tools_tama}
-        touch {output}
+        if [ -d {dir.tools_tama} ]; then rm -rf {dir.tools_tama}; fi
+        git clone https://github.com/GenomeRIK/tama.git {dir.tools_tama} 
         """
