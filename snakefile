@@ -18,8 +18,7 @@ include: os.path.join("rules","ab_initio.smk")
 
 include: os.path.join("rules","hints.smk")
 
-print(samples)
-print(groups)
+
 rule all:
     input:
         #expand(os.path.join(dir.out.evidence_driven,"{group}","evidence_driven_prediction.gtf"),group=groups)

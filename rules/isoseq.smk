@@ -146,9 +146,51 @@ rule mapping_reads:
         minimap2 -ax splice -t {threads} -uf --secondary=no -C5 {input.genome} {input.reads} | samtools sort |  samtools view -bS > {output}
         """
 
+rule index_genome:
+    input:
+        genome = config.required.genome
+    output:
+        os.path.join(dir.tools,"minimap2","index.mmi")
+    conda:
+        f"{dir.env}/isoseq.yaml"
+    threads:
+        config.resources.medium.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.medium.qos}'",
+        cpus_per_task = config.resources.medium.cpus,
+        mem = config.resources.medium.mem,
+        runtime =  config.resources.medium.time
+    shell:
+        """
+        mkdir -p {dir.tools}/minimap2
+        pbmm2 index {input.genome} {output}
+        """
+
+rule mapping_reads_pbmm2:
+    input:
+        bam = os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
+        index = os.path.join(dir.tools,"minimap2","index.mmi")
+    output:
+        os.path.join(dir.out.isoseq_mapping,"{sample}.mapping_pbmm2.bam"),
+    conda:
+        f"{dir.env}/isoseq.yaml"
+    threads:
+        config.resources.big.cpus,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.big.cpus,
+        mem = config.resources.big.mem,
+        runtime =  config.resources.big.time
+    log:
+        os.path.join(dir.logs,"isoseq_mapping_{sample}.log")
+    shell:
+        """
+        pbmm2 align --preset ISOSEQ --sort {input.index} {input.bam}  {output} &> {log}
+        """
+
 rule collapse_isoforms:
     input:
-        mapped = os.path.join(dir.out.isoseq_mapping,"{sample}.mapping.bam"),
+        mapped = os.path.join(dir.out.isoseq_mapping,"{sample}.mapping_pbmm2.bam"),
         flnc = os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
     output:
         os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff"),

@@ -29,6 +29,7 @@ dir.scripts = os.path.join(workflow.basedir, "scripts")
 dir.tools = os.path.join(config.required.toolsdir)
 dir.tools_conda = os.path.join(dir.tools, "conda_envs")
 dir.tools_tama = os.path.join(dir.tools, "tama")
+dir.tools_busco = os.path.join(dir.tools, "busco")
 
 
 ### Output_dirs

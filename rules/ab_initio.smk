@@ -26,7 +26,7 @@ rule busco_run:
     conda:
         f"{dir.env}/busco.yaml"  
     params:
-        busco_dir = config.optional.busco_downloads,
+        busco_dir = dir.tools_busco,
         lineage = config.optional.lineage
     resources:
         slurm_extra = f"'--qos={config.resources.busco.qos}'",

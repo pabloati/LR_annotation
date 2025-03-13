@@ -15,7 +15,7 @@ def get_snakefile(file="snakefile"):
         sys.exit("Unable to locate the Snakemake workflow file; tried %s" % sf)
     return sf
 
-def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm):
+def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm,extras):
     config = load_configfile(conf)
     sf = get_snakefile()
     conda_prefix = os.path.join(config["required"].get('toolsdir', None),"conda_envs")
@@ -28,6 +28,8 @@ def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm):
         cmd += ' --ri'
     if slurm:
         cmd += ' --slurm --default-resources slurm_account=gge'
+    if extras:
+        cmd += f' {extras}'
     print(f"Running command: {cmd}")
     subprocess.run(cmd, shell=True)
     return
@@ -40,9 +42,10 @@ def argparser():
     parser.add_argument('--rerun_incomplete', '-R', action='store_true', help='Rerun incomplete')
     parser.add_argument('--slurm', '-s', action='store_true', help='Run on slurm')
     parser.add_argument('--jobs', '-j', type=int, help='Number of jobs',default=8)
+    parser.add_argument('--extras', '-e', type=str, help='Extra arguments',default=None)
     return parser
 
 if __name__ == '__main__':
     parser = argparser()
     args = parser.parse_args()
-    run_smk(args.config, args.jobs, args.dryrun, args.unlock, args.rerun_incomplete, args.slurm)
+    run_smk(args.config, args.jobs, args.dryrun, args.unlock, args.rerun_incomplete, args.slurm,args.extras)
