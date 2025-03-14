@@ -144,21 +144,18 @@ rule extract_hints:
         tmp_dir=$(dirname {output})/tmp
         mkdir -p $tmp_dir
         if [ {params.utr} == "True" ]; then
-            echo "Extracting UTRs"
             grep -P "\t(CDS|exon)\t" {input} | gtf2gff.pl --printIntron --out=$tmp_dir/tmp.gff
             grep -P "\t(CDS|intron|exon)\t" $tmp_dir/tmp.gff > $tmp_dir/tmp2.gff
 
         else
-            echo "Not extracting UTRs"
             grep -P "\t(CDS)\t" {input} | gtf2gff.pl --printIntron --out=$tmp_dir/tmp.gff
             grep -P "\t(CDS|intron)\t" $tmp_dir/tmp.gff > $tmp_dir/tmp2.gff
         fi
         # Remove gene_id and change transcript id for grp_id
         sed -i 's/gene_id[^;]*;//g' $tmp_dir/tmp2.gff
         sed -i 's/transcript_id \\"/grp=/g' $tmp_dir/tmp2.gff
-
-        # change the trancript id for the source
-        cat $tmp_dir/tmp2.gff | sed "s/\\";$/;pri=1;src=PB/g" > {output}
+        # Add the source
+        cat $tmp_dir/tmp2.gff | sed "s/\\";/;pri=1;src=PB/g" > {output}
         rm -r $tmp_dir
         """
 
@@ -172,7 +169,8 @@ rule augustus_hints:
     conda:
         os.path.join(dir.env,"augustus.yaml")
     params:
-        name = config.optional.species_name
+        name = config.optional.species_name,
+        extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
     log:
         os.path.join(dir.logs,"run_augustus_{group}.log")
     resources:
@@ -181,4 +179,7 @@ rule augustus_hints:
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
     shell:
-        "augustus --species={params.name} {input.genome} --hintsfile={input.gff} --protein=off > {output} &> {log}"
+        """
+        augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
+        --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
+        """
