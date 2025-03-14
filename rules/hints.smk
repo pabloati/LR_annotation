@@ -159,27 +159,31 @@ rule extract_hints:
         rm -r $tmp_dir
         """
 
-rule augustus_hints:
-    input:
-        genome = config.required.genome,
-        mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
-        gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
-    output:
-        gtf = os.path.join(dir.out.evidence_driven,"{group}_evidence_driven_prediction.gtf")
-    conda:
-        os.path.join(dir.env,"augustus.yaml")
-    params:
-        name = config.optional.species_name,
-        extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
-    log:
-        os.path.join(dir.logs,"run_augustus_{group}.log")
-    resources:
-        slurm_extra = f"'--qos={config.resources.big.qos}'",
-        cpus_per_task = config.resources.big.cpus,
-        mem = config.resources.big.mem,
-        runtime =  config.resources.big.time
-    shell:
-        """
-        augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
-        """
+if config.augustus.mode == "split":
+    include: os.path.join("rules","split_augustus.smk")
+
+else:
+    rule augustus_hints:
+        input:
+            genome = config.required.genome,
+            mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
+            gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
+        output:
+            gtf = os.path.join(dir.out.evidence_driven,"{group}_evidence_driven_prediction.gtf")
+        conda:
+            os.path.join(dir.env,"augustus.yaml")
+        params:
+            name = config.optional.species_name,
+            extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
+        log:
+            os.path.join(dir.logs,"run_augustus_{group}.log")
+        resources:
+            slurm_extra = f"'--qos={config.resources.big.qos}'",
+            cpus_per_task = config.resources.big.cpus,
+            mem = config.resources.big.mem,
+            runtime =  config.resources.big.time
+        shell:
+            """
+            augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
+            --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
+            """

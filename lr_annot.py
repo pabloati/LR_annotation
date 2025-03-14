@@ -15,7 +15,7 @@ def get_snakefile(file="snakefile"):
         sys.exit("Unable to locate the Snakemake workflow file; tried %s" % sf)
     return sf
 
-def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm,extras):
+def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm,extras,slurm_extras):
     config = load_configfile(conf)
     sf = get_snakefile()
     conda_prefix = os.path.join(config["required"].get('toolsdir', None),"conda_envs")
@@ -27,7 +27,9 @@ def run_smk(conf,jobs,dryrun,unlock,rerun_incomplete,slurm,extras):
     if rerun_incomplete:
         cmd += ' --ri'
     if slurm:
-        cmd += ' --slurm --default-resources slurm_account=gge'
+        cmd += ' --executor slurm'
+        if slurm_extras != None:
+            cmd += f' {slurm_extras}'
     if extras:
         cmd += f' {extras}'
     print(f"Running command: {cmd}")
@@ -43,6 +45,7 @@ def argparser():
     parser.add_argument('--slurm', '-s', action='store_true', help='Run on slurm')
     parser.add_argument('--jobs', '-j', type=int, help='Number of jobs',default=8)
     parser.add_argument('--extras', '-e', type=str, help='Extra arguments',default=None)
+    parser.add_argument('--slurm_extras', '-se', type=str, help='Extra arguments for slurm',default=None)
     return parser
 
 if __name__ == '__main__':
