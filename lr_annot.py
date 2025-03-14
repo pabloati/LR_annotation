@@ -51,4 +51,4 @@ def argparser():
 if __name__ == '__main__':
     parser = argparser()
     args = parser.parse_args()
-    run_smk(args.config, args.jobs, args.dryrun, args.unlock, args.rerun_incomplete, args.slurm,args.extras)
+    run_smk(args.config, args.jobs, args.dryrun, args.unlock, args.rerun_incomplete, args.slurm,args.extras,args.slurm_extras)
