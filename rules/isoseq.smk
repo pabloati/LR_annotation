@@ -150,7 +150,7 @@ rule index_genome:
     input:
         genome = config.required.genome
     output:
-        os.path.join(dir.tools,"minimap2","index.mmi")
+        os.path.join(dir.tools_index,"index.mmi")
     conda:
         f"{dir.env}/isoseq.yaml"
     threads:
@@ -162,7 +162,7 @@ rule index_genome:
         runtime =  config.resources.medium.time
     shell:
         """
-        mkdir -p {dir.tools}/minimap2
+        mkdir -p {dir.tools_index}
         pbmm2 index {input.genome} {output}
         """
 

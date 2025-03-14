@@ -30,6 +30,8 @@ dir.tools = os.path.join(config.required.toolsdir)
 dir.tools_conda = os.path.join(dir.tools, "conda_envs")
 dir.tools_tama = os.path.join(dir.tools, "tama")
 dir.tools_busco = os.path.join(dir.tools, "busco")
+dir.tools_sqanti = os.path.join(dir.tools, "sqanti")
+dir.tools_index = os.path.join(dir.tools, "minimap2")
 
 
 ### Output_dirs
@@ -50,5 +52,6 @@ dir.out.isoseq_mapping = os.path.join(dir.out.isoseq, "mapping")
 dir.out.isoseq_collapsed = os.path.join(dir.out.isoseq, "collapsed")
 
 ## Hints
-dir.out.sqanti = os.path.join(dir.out.base, "sqanti")
 dir.out.evidence_driven = os.path.join(dir.out.base, "evidence_driven")
+dir.out.ed_sqanti = os.path.join(dir.out.evidence_driven, "sqanti")
+dir.out.ed_hints = os.path.join(dir.out.evidence_driven, "hints")
