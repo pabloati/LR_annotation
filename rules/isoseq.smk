@@ -158,7 +158,7 @@ rule index_genome:
     resources:
         slurm_extra = f"'--qos={config.resources.medium.qos}'",
         cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.medium.mem,
+        mem = config.resources.big.mem,
         runtime =  config.resources.medium.time
     shell:
         """

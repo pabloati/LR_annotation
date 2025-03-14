@@ -3,7 +3,7 @@ import attrmap as ap
 
 config = ap.AttrMap(config)
 
-localrules: all
+localrules: all, install_tama, install_sqanti
 # Setup rules
 include: os.path.join("rules","setup","directories.smk")
 include: os.path.join("rules","setup","installations.smk")
