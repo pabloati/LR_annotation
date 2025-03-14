@@ -160,7 +160,7 @@ rule extract_hints:
         """
 
 if config.augustus.mode == "split":
-    include: os.path.join("rules","split_augustus.smk")
+    include: "split_augustus.smk"
 
 else:
     rule augustus_hints:
@@ -169,7 +169,7 @@ else:
             mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
             gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
         output:
-            gtf = os.path.join(dir.out.evidence_driven,"{group}_evidence_driven_prediction.gtf")
+            gtf = os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf")
         conda:
             os.path.join(dir.env,"augustus.yaml")
         params:

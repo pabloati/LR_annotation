@@ -32,6 +32,7 @@ dir.tools_tama = os.path.join(dir.tools, "tama")
 dir.tools_busco = os.path.join(dir.tools, "busco")
 dir.tools_sqanti = os.path.join(dir.tools, "sqanti")
 dir.tools_index = os.path.join(dir.tools, "minimap2")
+dir.tools_reference = os.path.join(dir.tools, "split_reference")
 
 
 ### Output_dirs

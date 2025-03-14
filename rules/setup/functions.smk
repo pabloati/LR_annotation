@@ -1,9 +1,9 @@
 
 def get_sqanti_gtf(config):
-    if config.isoseq.prediction == "ab_initio":
+    if config.augustus.prediction == "ab_initio":
         return os.path.join(dir.out.ab_augustus_model,"augustus.gtf")
-    elif config.isoseq.prediction == "evidence_driven":
-        return config.isoseq.reference_gtf
+    elif config.augustus.prediction == "evidence_driven":
+        return config.augustus.reference_gtf
 
 def get_samples_and_groups(file):
     samples = []
@@ -19,3 +19,9 @@ def get_samples_and_groups(file):
                 if line.split("\t")[1] not in groups:
                     groups.append(line.split("\t")[1])
     return samples, groups
+
+def get_chromosomes(file):
+    import subprocess
+    result = subprocess.run(["grep", ">", file], capture_output=True, text=True)
+    output_list = [line.replace('>', '') for line in result.stdout.strip().split('\n')]
+    return output_list
