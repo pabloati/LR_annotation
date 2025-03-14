@@ -18,7 +18,7 @@ rule split_fasta:
     script:
         os.path.join(dir.scripts,"splitfasta.py")
 
-rule run_augusuts_per_chromosome:
+rule ed_augusuts_per_chromosome:
     input:
         os.path.join(dir.tools_reference,"fasta_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
@@ -45,8 +45,7 @@ rule run_augusuts_per_chromosome:
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
         --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
         """
-
-rule merge_predicitons:
+rule merge_ed_predicitons:
     input:
         expand(os.path.join(dir.out.evidence_driven,"augustus","{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
@@ -62,3 +61,46 @@ rule merge_predicitons:
         """
         cat {input} > {output}
         """
+
+rule ab_augustus_per_chromosome:
+    input:
+        os.path.join(dir.tools_reference,"fasta_split.done"),
+        mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
+    output:
+        os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff")
+    conda:
+        f"{dir.env}/augustus.yaml"
+    params:
+        name = config.optional.species_name,
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.big.mem,
+        runtime =  config.resources.big.time
+    threads:
+        config.resources.small.cpus
+    log:
+        os.path.join(dir.logs,"run_augustus_{chromosome}.log")
+    shell:
+        """
+        chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
+        augustus --species={params.name} $chromosome --protein=off > {output} &> {log}
+        """
+
+rule merge_ab_predictions:
+    input:
+        expand(os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff"),chromosome=chromosomes)
+    output:
+        gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    threads:
+        config.resources.small.cpus
+    shell:
+        """
+        cat {input} > {output}
+        """
+

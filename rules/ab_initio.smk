@@ -267,22 +267,25 @@ rule modify_stop_codon_freq:
         os.path.join(dir.scripts,"modify_SC_freq.py")
 
 # TODO: Is there any way to increase augustus usage to >1 core?
-rule run_augustus:
-    input:
-        genome = config.required.genome,
-        mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
-    output:
-        gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
-    conda:
-        os.path.join(dir.env,"augustus.yaml")
-    params:
-        name = config.optional.species_name
-    log:
-        os.path.join(dir.logs,"run_augustus.log")
-    resources:
-        slurm_extra = f"'--qos={config.resources.big.qos}'",
-        cpus_per_task = config.resources.big.cpus,
-        mem = config.resources.big.mem,
-        runtime =  config.resources.big.time
-    shell:
-        "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"
+if config.augustus.mode == "split":
+    include: "split_augustus.smk"
+else:
+    rule run_augustus:
+        input:
+            genome = config.required.genome,
+            mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
+        output:
+            gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        conda:
+            os.path.join(dir.env,"augustus.yaml")
+        params:
+            name = config.optional.species_name
+        log:
+            os.path.join(dir.logs,"run_augustus.log")
+        resources:
+            slurm_extra = f"'--qos={config.resources.big.qos}'",
+            cpus_per_task = config.resources.big.cpus,
+            mem = config.resources.big.mem,
+            runtime =  config.resources.big.time
+        shell:
+            "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"
