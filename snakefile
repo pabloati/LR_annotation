@@ -18,8 +18,8 @@ include: os.path.join("rules","ab_initio.smk")
 
 include: os.path.join("rules","hints.smk")
 
-
 rule all:
     input:
-        #expand(os.path.join(dir.out.evidence_driven,"{group}","evidence_driven_prediction.gtf"),group=groups)
-        expand( os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff"),group=groups)
+        expand(os.path.join(dir.out.evidence_driven,"{group}","_evidence_driven_prediction.gtf"),group=groups),
+        #expand( os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff"),group=groups)
+    

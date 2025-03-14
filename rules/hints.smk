@@ -78,12 +78,12 @@ rule tama2gtf:
 rule run_sqanti:
     input:
         isoforms = os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf"),
-        ab_initio_gff = get_sqanti_gtf(config),
+        ref_gff = get_sqanti_gtf(config),
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")
     output:
         os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf")
+        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf.cds.gff")
     threads:
         config.resources.medium.cpus,
     conda:
@@ -97,17 +97,17 @@ rule run_sqanti:
         runtime =  config.resources.medium.time
     shell:
         """
-        python {dir.tools_sqanti}/sqanti3_qc.py {input.isoforms} {input.ab_initio_gff} {input.ref_genome} \
+        python {dir.tools_sqanti}/sqanti3_qc.py {input.isoforms} {input.ref_gff} {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
         """
 
 rule filter_isoforms:
     input:
         classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
-        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf.cds.gff")
     output:
         classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.filt.txt"),
-        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.filt.gtf")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.filt.gtf")
     conda:
         os.path.join(dir.env,"sqanti3.yaml")
     log:
@@ -126,7 +126,7 @@ rule filter_isoforms:
 
 rule extract_hints:
     input:
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.filt.gtf")
+        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.filt.gtf")
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     conda:
