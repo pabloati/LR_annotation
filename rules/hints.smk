@@ -132,7 +132,7 @@ rule extract_hints:
     conda:
         os.path.join(dir.env,"busco.yaml")
     params:
-        utr = config.isoseq.utr
+        utr = config.augustus.utr
         #TODO: Perhaps add techonolgy and priority options
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
