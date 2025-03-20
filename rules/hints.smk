@@ -174,7 +174,7 @@ else:
             os.path.join(dir.env,"augustus.yaml")
         params:
             name = config.optional.species_name,
-            extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
+            extcfg = config.augustus.config if config.evidence_driven.config else f"{dir.envs}/extrinsic.M.RM.PB.cfg"
         log:
             os.path.join(dir.logs,"run_augustus_{group}.log")
         resources:
@@ -185,5 +185,5 @@ else:
         shell:
             """
             augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
-            --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
+            --extrinsicCfgFile={params.extcfg} --protein=off > {output}
             """

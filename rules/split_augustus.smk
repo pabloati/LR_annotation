@@ -43,7 +43,7 @@ rule ed_augusuts_per_chromosome:
         """
         chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=off > {output} &> {log}
+        --extrinsicCfgFile={params.extcfg} --protein=off > {output} 
         """
 rule merge_ed_predicitons:
     input:
@@ -84,7 +84,7 @@ rule ab_augustus_per_chromosome:
     shell:
         """
         chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
-        augustus --species={params.name} $chromosome --protein=off > {output} &> {log}
+        augustus --species={params.name} $chromosome --protein=off > {output} 
         """
 
 rule merge_ab_predictions:
