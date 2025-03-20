@@ -185,5 +185,5 @@ else:
         shell:
             """
             augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
-            --extrinsicCfgFile={params.extcfg} --protein=off > {output}
+            --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}
             """

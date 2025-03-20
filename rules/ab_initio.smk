@@ -288,4 +288,4 @@ else:
             mem = config.resources.big.mem,
             runtime =  config.resources.big.time
         shell:
-            "augustus --species={params.name} {input.genome} --protein=off > {output} &> {log}"
+            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} &> {log}"

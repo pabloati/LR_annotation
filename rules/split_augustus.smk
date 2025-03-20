@@ -43,7 +43,7 @@ rule ed_augusuts_per_chromosome:
         """
         chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=off > {output} 
+        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 
         """
 rule merge_ed_predicitons:
     input:
@@ -59,7 +59,7 @@ rule merge_ed_predicitons:
         config.resources.small.cpus
     shell:
         """
-        cat {input} > {output}
+        cat {input} | grep -v "#"> {output}
         """
 
 rule ab_augustus_per_chromosome:
@@ -84,7 +84,7 @@ rule ab_augustus_per_chromosome:
     shell:
         """
         chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
-        augustus --species={params.name} $chromosome --protein=off > {output} 
+        augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 
         """
 
 rule merge_ab_predictions:
@@ -101,6 +101,6 @@ rule merge_ab_predictions:
         config.resources.small.cpus
     shell:
         """
-        cat {input} > {output}
+        cat {input} | grep -v "#" > {output}
         """
 
