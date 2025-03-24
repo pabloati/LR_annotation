@@ -1,0 +1,13 @@
+name: busco
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - busco=5.8.2
+  - cd-hit
+  - ca-certificates
+  - certifi
+  - openssl
+  - pip:
+    - Bio
+
