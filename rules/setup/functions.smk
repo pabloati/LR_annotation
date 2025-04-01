@@ -1,7 +1,7 @@
 
 def get_sqanti_gtf(config):
     if config.augustus.prediction == "ab_initio":
-        return os.path.join(dir.out.ab_augustus_model,"augustus.gtf")
+        return os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
     elif config.augustus.prediction == "evidence_driven":
         return config.augustus.reference_gtf
 
