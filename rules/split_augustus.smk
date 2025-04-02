@@ -59,7 +59,10 @@ rule merge_ed_predicitons:
         config.resources.small.cpus
     shell:
         """
-        cat {input} | grep -v "#"> {output}
+        for file in {input} ; do
+            if [[ $((grep -v -c "#" $file)) -gt 0 ]]; then
+                cat $file >> {output}
+            fi
         """
 
 rule ab_augustus_per_chromosome:
