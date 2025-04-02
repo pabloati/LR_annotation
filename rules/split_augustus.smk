@@ -63,6 +63,7 @@ rule merge_ed_predicitons:
             if [[ $((grep -v -c "#" $file)) -gt 0 ]]; then
                 cat $file >> {output}
             fi
+        done
         """
 
 rule ab_augustus_per_chromosome:
