@@ -26,7 +26,7 @@ rule download_omark_db:
     output:
         os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     params:
-        db=config.augustus.omark_db
+        db=config.qc.omark_db
     shell:
         """
         wget https://omabrowser.org/All/{params.db}.h5 -O {output}

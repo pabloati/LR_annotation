@@ -10,8 +10,7 @@ def main():
         for line in samples:
             line = line.strip("\n")
             brk_2_samples[line.split(",")[0]] = line.split(",")[1]
-    print(os.listdir(dir))
-    print(brk_2_samples.keys())
+    
     for brk in os.listdir(dir):
         directory = os.path.join(dir, brk)
         if os.path.isdir(directory):
