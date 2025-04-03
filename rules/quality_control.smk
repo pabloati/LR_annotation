@@ -1,5 +1,5 @@
 
-
+print(config.resources.small.cpus)
 rule generate_proteome:
     input:
         annot = os.path.join(dir.out.evidence_driven,"{group}_prediction_renamed.gtf"), # TODO: generate function to get the annotation depending on the method used

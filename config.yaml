@@ -2,14 +2,11 @@ required:
   genome: ""
   input: ""
   outdir: "results"
-  toolsdir: "/home/patienza/Programs/lr_annotation"
+  toolsdir: "/home/pabloati/Programs/lr_annotation"
   samples_setup: "data/experiment_setup.tsv"
 isoseq:
   primers: "data/original_primers.fasta"
   primers_to_samples: "primers_sample.csv"
-  prediction: evidence_driven
-  reference_gtf: "data/mm39.ncbiRefSeq.gtf"
-  utr: True
 augustus:
   prediction: evidence_driven
   reference_gtf: "data/mm39.ncbiRefSeq.gtf"
@@ -23,7 +20,6 @@ ab_initio:
   lineage: "eutheria_odb10"
   flanking_region: 1000
   test_size: 5000
-  
 resources:
   big:
     cpus: 10
