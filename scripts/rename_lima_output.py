@@ -36,6 +36,6 @@ def main():
 
 if __name__=="__main__":
     main()
-    with open(snakemake.output[0], "w") as f:
-        f.write("Lima has been correctly renamed\n")
-    f.close()
+    # with open(snakemake.output[0], "w") as f:
+    #     f.write("Lima has been correctly renamed\n")
+    # f.close()
