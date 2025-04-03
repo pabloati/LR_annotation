@@ -24,7 +24,7 @@ rule busco_run:
     output:
         directory(dir.out.ab_busco)
     conda:
-        f"{dir.env}/busco.yaml"  
+        f"{dir.envs}/busco.yaml"  
     params:
         busco_dir = dir.tools_busco,
         lineage = config.ab_initio.lineage
@@ -58,7 +58,7 @@ rule busco_gather:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     conda:
-        os.path.join(dir.env,"busco.yaml")
+        os.path.join(dir.envs,"busco.yaml")
     log:
         os.path.join(dir.logs,"busco_gather.log")
     script:
@@ -70,7 +70,7 @@ rule clustering_busco_genes:
     output:
         os.path.join(dir.out.ab_augustus_model,"cdhit.lst")
     conda:
-        os.path.join(dir.env,"busco.yaml")
+        os.path.join(dir.envs,"busco.yaml")
     log:
         os.path.join(dir.logs,"clustering_busco_genes.log")
     resources:
@@ -92,7 +92,7 @@ rule concatenate_gff:
     output:
         os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
     conda:
-        os.path.join(dir.env,"busco.yaml")
+        os.path.join(dir.envs,"busco.yaml")
     params:
         lineage = config.ab_initio.lineage,
         gene_type = "single"
@@ -113,7 +113,7 @@ rule gtf2genbank:
     output:
         gen_bank = os.path.join(dir.out.ab_augustus_model,"busco_genes.gb")
     conda:
-        os.path.join(dir.env,"busco.yaml")
+        os.path.join(dir.envs,"busco.yaml")
     params:
         flanking_region = config.ab_initio.flanking_region
     log:
@@ -154,7 +154,7 @@ rule new_species:
     output:
         touch(os.path.join(dir.out.ab_augustus_model,f"{config.augustus.species_name}.done"))
     conda:
-        os.path.join(dir.env,"augustus.yaml")
+        os.path.join(dir.envs,"augustus.yaml")
     params:
         name = config.augustus.species_name,
         augustus_dir = os.environ.get("AUGUSTUS_CONFIG_PATH")
@@ -178,7 +178,7 @@ rule initial_etraining:
     output:
         training = os.path.join(dir.out.ab_augustus_training,"etrain.out")
     conda:
-        os.path.join(dir.env,"augustus.yaml")
+        os.path.join(dir.envs,"augustus.yaml")
     params:
         name = config.augustus.species_name
     log:
@@ -211,7 +211,7 @@ rule filter_genes:
     output:
         filt = os.path.join(dir.out.ab_augustus_training,"filtered.gb")
     conda:
-        os.path.join(dir.env,"augustus.yaml")
+        os.path.join(dir.envs,"augustus.yaml")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -226,7 +226,7 @@ rule retrain:
     output:
         train = os.path.join(dir.out.ab_augustus_training,"etrain_filtered.out")
     conda:
-        os.path.join(dir.env,"augustus.yaml")
+        os.path.join(dir.envs,"augustus.yaml")
     params:
         name = config.augustus.species_name
     resources:
@@ -255,7 +255,7 @@ rule modify_stop_codon_freq:
     params:
         name = config.augustus.species_name
     conda:
-        os.path.join(dir.env,"augustus.yaml")
+        os.path.join(dir.envs,"augustus.yaml")
     log:
         os.path.join(dir.logs,"modify_stop_codon_freq.log")
     resources:
@@ -277,7 +277,7 @@ else:
         output:
             gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
         conda:
-            os.path.join(dir.env,"augustus.yaml")
+            os.path.join(dir.envs,"augustus.yaml")
         params:
             name = config.augustus.species_name
         log:

@@ -8,7 +8,7 @@ rule gff2bed12: # local_rule
     output:
         os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12")
     conda:
-        os.path.join(dir.env,"tama.yaml")
+        os.path.join(dir.envs,"tama.yaml")
     threads:
         config.resources.small.cpus,
     shell:
@@ -23,7 +23,7 @@ rule tama_setup: # local_rule
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
     conda:
-        os.path.join(dir.env,"sqanti3.yaml")
+        os.path.join(dir.envs,"sqanti3.yaml")
     threads:
         config.resources.small.cpus,
     log: 
@@ -38,7 +38,7 @@ rule tama_merge:
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_merge.txt")
     conda:
-        os.path.join(dir.env,"tama.yaml")
+        os.path.join(dir.envs,"tama.yaml")
     threads:
         config.resources.small.cpus,
     resources:
@@ -60,7 +60,7 @@ rule tama2gtf:
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf")
     conda:
-        os.path.join(dir.env,"tama.yaml")
+        os.path.join(dir.envs,"tama.yaml")
     threads:
         config.resources.small.cpus,
     resources:
@@ -87,7 +87,7 @@ rule run_sqanti:
     threads:
         config.resources.medium.cpus,
     conda:
-        f"{dir.env}/sqanti3.yaml"
+        f"{dir.envs}/sqanti3.yaml"
     log:
         os.path.join(dir.logs,"run_sqanti_{group}.log")
     resources:
@@ -109,7 +109,7 @@ rule filter_isoforms:
         classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.filt.txt"),
         gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.filt.gtf")
     conda:
-        os.path.join(dir.env,"sqanti3.yaml")
+        os.path.join(dir.envs,"sqanti3.yaml")
     log:
         os.path.join(dir.logs,"filter_sqanti_{group}.log")
     threads:
@@ -130,7 +130,7 @@ rule extract_hints:
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     conda:
-        os.path.join(dir.env,"busco.yaml")
+        os.path.join(dir.envs,"busco.yaml")
     params:
         utr = config.augustus.utr
         #TODO: Perhaps add techonolgy and priority options
@@ -171,10 +171,10 @@ else:
         output:
             gtf = os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gtf")
         conda:
-            os.path.join(dir.env,"augustus.yaml")
+            os.path.join(dir.envs,"augustus.yaml")
         params:
             name = config.augustus.species_name,
-            extcfg = config.augustus.config if config.evidence_driven.config else f"{dir.envs}/extrinsic.M.RM.PB.cfg"
+            extcfg = config.augustus.config if config.evidence_driven.config else f"{dir.envss}/extrinsic.M.RM.PB.cfg"
         log:
             os.path.join(dir.logs,"run_augustus_{group}.log")
         resources:

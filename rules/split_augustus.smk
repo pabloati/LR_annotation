@@ -10,7 +10,7 @@ rule split_fasta:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     conda:
-        f"{dir.env}/sqanti3.yaml"
+        f"{dir.envs}/sqanti3.yaml"
     threads:
         config.resources.small.cpus
     log:
@@ -26,10 +26,10 @@ rule ed_augusuts_per_chromosome:
     output:
         os.path.join(dir.out.ed_augustus,"{group}","{chromosome}.prediction.gff")
     conda:
-        f"{dir.env}/augustus.yaml"
+        f"{dir.envs}/augustus.yaml"
     params:
         name = config.augustus.species_name,
-        extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
+        extcfg = f"{dir.envss}/extrinsic.M.RM.PB.cfg"
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -73,7 +73,7 @@ rule ab_augustus_per_chromosome:
     output:
         os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff")
     conda:
-        f"{dir.env}/augustus.yaml"
+        f"{dir.envs}/augustus.yaml"
     params:
         name = config.augustus.species_name,
     resources:

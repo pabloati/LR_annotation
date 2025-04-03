@@ -21,7 +21,7 @@ except (KeyError, AssertionError):
     dir.out.base = "evidence_annot"
 
 ### Workflow_dirs
-dir.env = os.path.join(workflow.basedir, "envs")
+dir.envs = os.path.join(workflow.basedir, "envs")
 dir.rules = os.path.join(workflow.basedir, "rules")
 dir.scripts = os.path.join(workflow.basedir, "scripts")
 
