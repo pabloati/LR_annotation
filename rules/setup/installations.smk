@@ -27,7 +27,9 @@ rule download_omark_db:
         os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     params:
         db=config.qc.omark_db
+    log:
+        os.path.join(dir.logs,"download_omark_db.log")
     shell:
         """
-        wget https://omabrowser.org/All/{params.db}.h5 -O {output}
+        wget https://omabrowser.org/All/{params.db}.h5 -O {output} &> {log}
         """
