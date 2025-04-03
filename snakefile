@@ -16,8 +16,10 @@ include: os.path.join("rules","isoseq.smk")
 
 include: os.path.join("rules","ab_initio.smk")
 
-include: os.path.join("rules","hints.smk")
+include: os.path.join("rules","evidence_driven.smk")
 
 rule all:
     input:
-        expand(os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf"),group=groups)    
+        expand(os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf"),group=groups)
+        expand(os.path.join(dir.out.qc_omark,"{group}","{group}.pdf"),group=groups),
+        expand(os.path.join(dir.out.qc_busco,"{group}"),group=groups)

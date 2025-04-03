@@ -56,3 +56,9 @@ dir.out.isoseq_collapsed = os.path.join(dir.out.isoseq, "collapsed")
 dir.out.evidence_driven = os.path.join(dir.out.base, "evidence_driven")
 dir.out.ed_sqanti = os.path.join(dir.out.evidence_driven, "sqanti")
 dir.out.ed_hints = os.path.join(dir.out.evidence_driven, "hints")
+dir.out.ed_augustus = os.path.join(dir.out.evidence_driven, "augustus")
+
+# Quality control
+dir.out.qc = os.path.join(dir.out.base, "qc")
+dir.out.qc_omark = os.path.join(dir.out.qc, "omark")
+dir.out.qc_busco = os.path.join(dir.out.qc, "busco")

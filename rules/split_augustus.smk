@@ -24,11 +24,11 @@ rule ed_augusuts_per_chromosome:
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
         gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     output:
-        os.path.join(dir.out.evidence_driven,"augustus","{group}","{chromosome}.prediction.gff")
+        os.path.join(dir.out.ed_augustus,"{group}","{chromosome}.prediction.gff")
     conda:
         f"{dir.env}/augustus.yaml"
     params:
-        name = config.optional.species_name,
+        name = config.augustus.species_name,
         extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
@@ -47,9 +47,9 @@ rule ed_augusuts_per_chromosome:
         """
 rule merge_ed_predicitons:
     input:
-        expand(os.path.join(dir.out.evidence_driven,"augustus","{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
+        expand(os.path.join(dir.out.ed_augustus,"{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        gtf = os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf")
+        gtf = os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gtf")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -75,7 +75,7 @@ rule ab_augustus_per_chromosome:
     conda:
         f"{dir.env}/augustus.yaml"
     params:
-        name = config.optional.species_name,
+        name = config.augustus.species_name,
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,

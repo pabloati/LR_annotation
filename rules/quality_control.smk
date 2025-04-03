@@ -2,10 +2,10 @@
 
 rule generate_proteome:
     input:
-        annot = os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf"), # TODO: generate function to get the annotation depending on the method used
+        annot = os.path.join(dir.out.evidence_driven,"{group}_prediction_renamed.gtf"), # TODO: generate function to get the annotation depending on the method used
         reference = config.required.genome,
     output:
-        os.path.join(dir.out.evidence_driven,"{group}_prediction.aa")
+        os.path.join(dir.out.evidence_driven,"{group}_prediction_renamed.aa")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -24,7 +24,7 @@ rule generate_proteome:
 
 rule omamer:
     input:
-        proteome = os.path.join(dir.out.evidence_driven,"{group}_prediction.aa"),
+        proteome = os.path.join(dir.out.evidence_driven,"{group}_prediction_renamed.aa"),
         omark_db = os.path.join(dir.tools_db,f"{config.qc.omark_db}.h5")
     output:
         os.path.join(dir.out.qc_omark,"{group}","{group}_res.omamer")
@@ -66,10 +66,15 @@ rule busco_qc:
     input:
         proteome = os.path.join(dir.out.evidence_driven,"{group}_prediction.aa"),        
     output:
-        directory(dir.out.qc_busco)
+        directory(os.path.join(dir.out.qc_busco,"{group}")),
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.busco.cpus,
+        mem = config.resources.big.mem,
+        runtime =  config.resources.medium.time
     params:
         busco_dir = dir.out.busco,
-        lineage = config.optional.lineage,
+        lineage = config.ab_initio.lineage,
     log: 
         os.path.join(dir.logs, "busco_qc_{group}.log")
     conda:
