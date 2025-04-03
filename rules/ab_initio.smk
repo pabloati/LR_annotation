@@ -167,7 +167,7 @@ rule new_species:
         runtime =  config.resources.small.time
     shell:
         """
-        rm -rf {params.augustus_dir}/species/{params.name}
+        rm -rf $AUGUSTUS_CONFIG_PATH/species/{params.name}
         new_species.pl --species={params.name} &> {log}
         """
 

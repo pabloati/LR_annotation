@@ -60,7 +60,7 @@ rule merge_ed_predicitons:
     shell:
         """
         for file in {input} ; do
-            if [[ $((grep -v -c "#" $file)) -gt 0 ]]; then
+            if [[ $(grep -v -c "#" $file) -gt 0 ]]; then
                 cat $file >> {output}
             fi
         done
