@@ -1,31 +1,11 @@
 
-rule busco_qc:
-    input:
-        ""
-    output:
-        directory(dir.out.qc_busco)
-    params:
-        busco_dir = dir.out.busco,
-        busco_out = dir.out.qc_busco,
-        busco_db = config.busco.db,
-        busco_mode = config.busco.mode,
-        busco_threads = config.busco.threads
-    log: 
-        os.path.join(dir.logs, "busco_qc.log")
-    conda:
-        os.path.join(dir.envs, "busco.yaml")
-    shell:
-        """
-        busco -i {params.busco_dir} -o {params.busco_out} -l {params.busco_db} \
-            -m {params.busco_mode} -c {params.busco_threads} --force --download_path {dir.tools_busco}
-        """
 
 rule generate_proteome:
     input:
-        annot = get_final_annotation(config), # TODO: generate function to get the annotation depending on the method used
+        annot = os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf"), # TODO: generate function to get the annotation depending on the method used
         reference = config.required.genome,
     output:
-        dir.out.final_results,
+        os.path.join(dir.out.evidence_driven,"{group}_prediction.aa")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -39,6 +19,63 @@ rule generate_proteome:
         """
         getAnnoFasta.pl {input.annot} --seqfile={input.reference}
         """"
+
+# OMARk results
+
+rule omamer:
+    input:
+        proteome = os.path.join(dir.out.evidence_driven,"{group}_prediction.aa"),
+        omark_db = os.path.join(dir.tools_db,f"{config.qc.omark_db}.h5")
+    output:
+        os.path.join(dir.out.qc_omark,"{group}","{group}_res.omamer")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "omamer_{group}.log")
+    conda:
+        os.path.join(dir.envs, "omark.yaml")
+    shell:
+        """
+        omamer --db {input.omark_db} --query {input.proteome} --out {output} &> {log}
+        """
+
 rule omark:
     input:
-        get_final_annotation(config), # TODO: generate function to get the annotation depending on the method used
+        omamer = os.path.join(dir.out.qc_omar,"{group}","{group}.omamer"), # TODO: generate function to get the annotation depending on the method used
+        omark_db = os.path.join(dir.tools_db,f"{config.qc.omark_db}.h5")
+    output:
+        os.path.join(dir.out.qc_omark,"{group}","{group}.pdf")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "omark_{group}.log")
+    conda:
+        os.path.join(dir.envs, "omark.yaml")
+    shell:
+        """
+        omark -f {input.omamer} -d {input.omark_db} -o $(dirname {output}) &> {log}
+        """
+
+rule busco_qc:
+    input:
+        proteome = os.path.join(dir.out.evidence_driven,"{group}_prediction.aa"),        
+    output:
+        directory(dir.out.qc_busco)
+    params:
+        busco_dir = dir.out.busco,
+        lineage = config.optional.lineage,
+    log: 
+        os.path.join(dir.logs, "busco_qc_{group}.log")
+    conda:
+        os.path.join(dir.envs, "busco.yaml")
+    shell:
+        """
+        busco -i {params.busco_dir} -o {output} -l {params.lineage} \
+            -m proteins -c {params.busco_threads} --force --download_path {dir.busco_dir} &> {log}
+        """

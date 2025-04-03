@@ -45,7 +45,6 @@ rule lima_renaming:
     input:
         os.path.join(dir.out.isoseq_lima,"fl.json")
     output:
-        touch(os.path.join(dir.out.isoseq_lima,"renamed.done")),
         expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples),
     params:
         samples = config.isoseq.primers_to_samples
@@ -64,7 +63,6 @@ rule lima_renaming:
 
 rule refine:
     input:
-        os.path.join(dir.out.isoseq_lima,"renamed.done"),
         lima = os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam")
     output:
         os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")

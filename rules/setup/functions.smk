@@ -25,3 +25,9 @@ def get_chromosomes(file):
     result = subprocess.run(["grep", ">", file], capture_output=True, text=True)
     output_list = [line.replace('>', '') for line in result.stdout.strip().split('\n')]
     return output_list
+
+def get_final_annotation(config):
+    if config.augustus.prediction == "ab_initio":
+        return os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+    elif config.augustus.prediction == "evidence_driven":
+        return os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf").

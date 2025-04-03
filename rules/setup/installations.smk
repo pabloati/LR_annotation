@@ -21,3 +21,13 @@ rule install_sqanti:
         """
         git clone https://github.com/ConesaLab/SQANTI3.git {dir.tools_sqanti}
         """
+
+rule download_omark_db:
+    output:
+        os.path.join(dir.tools_db,f"{config.augustus.omark_db}.h5")
+    params:
+        db=config.augustus.omark_db
+    shell:
+        """
+        wget https://omabrowser.org/All/{params.db}.h5 -O {output}
+        """
