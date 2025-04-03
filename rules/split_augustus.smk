@@ -29,7 +29,7 @@ rule ed_augusuts_per_chromosome:
         f"{dir.envs}/augustus.yaml"
     params:
         name = config.augustus.species_name,
-        extcfg = f"{dir.envss}/extrinsic.M.RM.PB.cfg"
+        extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,

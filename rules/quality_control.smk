@@ -24,7 +24,7 @@ rule generate_proteome:
 rule omamer:
     input:
         proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.aa"),
-        omark_db = os.path.join(dir.tools_db,f"{config.qc.omark_db}.h5")
+        omark_db = os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     output:
         os.path.join(dir.out.qc_omark,"{group}","{group}.omamer")
     resources:
@@ -44,7 +44,7 @@ rule omamer:
 rule omark:
     input:
         omamer = os.path.join(dir.out.qc_omark,"{group}","{group}.omamer"),
-        omark_db = os.path.join(dir.tools_db,f"{config.qc.omark_db}.h5")
+        omark_db = os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     output:
         os.path.join(dir.out.qc_omark,"{group}","{group}.pdf")
     resources:

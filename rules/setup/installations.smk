@@ -24,7 +24,7 @@ rule install_sqanti:
 
 rule download_omark_db:
     output:
-        os.path.join(dir.tools_db,f"{config.augustus.omark_db}.h5")
+        os.path.join(dir.tools_omark,f"{config.augustus.omark_db}.h5")
     params:
         db=config.augustus.omark_db
     shell:
