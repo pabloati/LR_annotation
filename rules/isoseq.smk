@@ -57,6 +57,8 @@ rule lima_renaming:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs,"lima_renaming.log")
     script:
         f"{dir.scripts}/rename_lima_output.py"    
     

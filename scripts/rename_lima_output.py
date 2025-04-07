@@ -24,6 +24,8 @@ def main():
                     pass
                 for file in os.listdir(directory):
                     new_name = file.replace(f"fl.{brk}", f"{sample_name}.fl")
+                    print(f"Renaming {file} to {new_name}")
+                    print(f"FULL PATH: {os.path.join(directory, file)}, to {os.path.join(path,new_name)}")
                     os.rename(os.path.join(directory, file), 
                             os.path.join(path,new_name))
                 os.rmdir(directory)
