@@ -1,7 +1,8 @@
 import os,sys
 
 def main():
-    dir=os.path.dirname(snakemake.input[0])
+    print("Input files: ", snakemake.input)
+    dir=os.path.dirname(os.path.dirname(snakemake.input[0]))
     samples_file = snakemake.params[0]
     brk_2_samples = {}
 
