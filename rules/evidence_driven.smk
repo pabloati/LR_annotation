@@ -201,7 +201,7 @@ rule rename_augustus:
     log:
         os.path.join(dir.logs, "rename_augustus_{group}.log")
     script:
-        f"{dir.scripts}/rename_augustus.py"
+        f"{dir.scripts}/rename_augustus_genes.py"
 
 rule clean_annotation:
     input:
