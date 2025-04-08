@@ -21,7 +21,7 @@ rule split_fasta:
 
 rule ed_augusuts_per_chromosome:
     input:
-        os.path.join(dir.tools_reference,"fasta_split.done"),
+        os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
         gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     output:
@@ -70,7 +70,7 @@ rule merge_ed_predicitons:
 
 rule ab_augustus_per_chromosome:
     input:
-        os.path.join(dir.tools_reference,"fasta_split.done"),
+        os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
     output:
         os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff")
@@ -89,7 +89,7 @@ rule ab_augustus_per_chromosome:
         os.path.join(dir.logs,"run_augustus_{chromosome}.log")
     shell:
         """
-        chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
+        chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 
         """
 
