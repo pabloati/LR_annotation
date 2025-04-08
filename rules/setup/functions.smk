@@ -1,3 +1,4 @@
+import os
 
 def get_sqanti_gtf(config):
     if config.augustus.prediction == "ab_initio":
@@ -25,6 +26,9 @@ def get_chromosomes(file):
     result = subprocess.run(["grep", ">", file], capture_output=True, text=True)
     output_list = [line.replace('>', '') for line in result.stdout.strip().split('\n')]
     return output_list
+
+def get_genome_name(file):
+    return  os.path.splitext(os.path.basename(file_path))[0]
 
 # def get_final_annotation(config):
 #     if config.augustus.prediction == "ab_initio":

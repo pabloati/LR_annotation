@@ -148,7 +148,7 @@ rule index_genome:
     input:
         genome = config.required.genome
     output:
-        os.path.join(dir.tools_index,"index.mmi")
+        os.path.join(dir.tools_index,genome_name,"index.mmi")
     conda:
         f"{dir.envs}/isoseq.yaml"
     threads:

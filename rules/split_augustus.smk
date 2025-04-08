@@ -1,9 +1,10 @@
 chromosomes=get_chromosomes(config.required.genome)
+
 rule split_fasta:
     input:
         fasta = config.required.genome
     output:
-        touch(os.path.join(dir.tools_reference,"fasta_split.done"))
+        touch(os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"))
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -41,10 +42,11 @@ rule ed_augusuts_per_chromosome:
         os.path.join(dir.logs,"run_augustus_{group}_{chromosome}.log")
     shell:
         """
-        chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
+        chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
         --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 
         """
+
 rule merge_ed_predicitons:
     input:
         expand(os.path.join(dir.out.ed_augustus,"{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
