@@ -17,7 +17,6 @@ rule lima:
     input:
         config.required.input
     output:
-        name = os.path.join(dir.out.isoseq_lima,"fl.bam"),
         json = os.path.join(dir.out.isoseq_lima,"fl.json")
     conda:
         f"{dir.envs}/isoseq.yaml"
@@ -38,7 +37,6 @@ rule lima:
         lima {input} {params.primers} {output.name} \
             --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
             --split-named --biosample-csv {params.samples} &> {log}
-        touch {output}
         """
 
 rule lima_renaming:

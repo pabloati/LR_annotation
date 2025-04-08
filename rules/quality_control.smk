@@ -84,6 +84,6 @@ rule busco_qc:
         config.resources.busco.cpus,
     shell:
         """
-        busco -i {params.busco_dir} -o {output} -l {params.lineage} \
+        busco -i {input.proteome} -o {output} -l {params.lineage} \
             -m proteins -c {threads} --force --download_path {dir.busco_dir} &> {log}
         """
