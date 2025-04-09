@@ -38,7 +38,7 @@ rule omamer:
         os.path.join(dir.envs, "omark.yaml")
     shell:
         """
-        omamer --db {input.omark_db} --query {input.proteome} --out {output} &> {log}
+        omamer search --db {input.omark_db} --query {input.proteome} --out {output} &> {log}
         """
 
 rule omark:
@@ -74,7 +74,7 @@ rule busco_qc:
         mem = config.resources.big.mem,
         runtime =  config.resources.medium.time
     params:
-        busco_dir = dir.out.busco,
+        busco_dir = dir.tools_busco,
         lineage = config.ab_initio.lineage,
     log: 
         os.path.join(dir.logs, "busco_qc_{group}.log")
