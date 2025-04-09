@@ -85,5 +85,5 @@ rule busco_qc:
     shell:
         """
         busco -i {input.proteome} -o {output} -l {params.lineage} \
-            -m proteins -c {threads} --force --download_path {dir.busco_dir} &> {log}
+            -m proteins -c {threads} --force --download_path {params.busco_dir} &> {log}
         """
