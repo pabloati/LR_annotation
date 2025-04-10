@@ -149,7 +149,7 @@ rule index_genome:
     input:
         genome = config.required.genome
     output:
-        os.path.join(dir.tools_index,genome_name,,"index.mmi")
+        os.path.join(dir.tools_index,genome_name,"index.mmi")
     conda:
         f"{dir.envs}/isoseq.yaml"
     threads:
@@ -169,6 +169,7 @@ rule mapping_reads_pbmm2:
     input:
         bam = os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
         index = os.path.join(dir.tools_index,genome_name,"index.mmi")
+    output:
         os.path.join(dir.out.isoseq_mapping,"{sample}.mapping_pbmm2.bam"),
     conda:
         f"{dir.envs}/isoseq.yaml"
