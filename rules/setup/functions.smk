@@ -28,7 +28,7 @@ def get_chromosomes(file):
     return output_list
 
 def get_genome_name(file):
-    return  os.path.splitext(os.path.basename(file_path))[0]
+    return  os.path.splitext(os.path.basename(file))[0]
 
 # def get_final_annotation(config):
 #     if config.augustus.prediction == "ab_initio":

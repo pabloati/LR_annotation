@@ -17,6 +17,7 @@ rule lima:
     input:
         config.required.input
     output:
+        name = os.path.join(dir.out.isoseq_lima,"fl.bam"),
         json = os.path.join(dir.out.isoseq_lima,"fl.json")
     conda:
         f"{dir.envs}/isoseq.yaml"
@@ -96,10 +97,10 @@ rule cluster:
     threads:
         config.resources.small.cpus,
     resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
+        slurm_extra = f"'--qos={config.resources.medium.qos}'",
+        cpus_per_task = config.resources.medium.cpus,
         mem = config.resources.small_bigMem.mem,
-        runtime =  config.resources.small.time
+        runtime =  config.resources.medium.time
     shell:
         """
         isoseq cluster2 {input} {output.bam} &> {log}
@@ -175,7 +176,7 @@ rule mapping_reads_pbmm2:
     threads:
         config.resources.big.cpus,
     resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        slurm_extra = f"'--qos={config.resources.big.qos}'",
         cpus_per_task = config.resources.big.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
