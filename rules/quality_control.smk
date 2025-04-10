@@ -106,7 +106,7 @@ rule agat_cleaning:
         config.resources.small.cpus,
     shell:
         """
-        gat_convert_sp_gxf2gxf.pl -g {input} -o {output} &> {log}
+        agat_convert_sp_gxf2gxf.pl -g {input} -o {output} &> {log}
         """
 
 rule agat_stats:
