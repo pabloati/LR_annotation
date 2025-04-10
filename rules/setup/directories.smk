@@ -61,6 +61,7 @@ dir.out.ed_hints = os.path.join(dir.out.evidence_driven, "hints")
 dir.out.ed_augustus = os.path.join(dir.out.evidence_driven, "augustus")
 
 # Quality control
-dir.out.qc = os.path.join(dir.out.base, "qc")
+dir.out.qc = os.path.join(dir.out.base, "quality_control")
 dir.out.qc_omark = os.path.join(dir.out.qc, "omark")
 dir.out.qc_busco = os.path.join(dir.out.qc, "busco")
+dir.out.qc_agat = os.path.join(dir.out.qc, "agat")

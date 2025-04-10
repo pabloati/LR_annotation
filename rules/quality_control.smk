@@ -87,3 +87,47 @@ rule busco_qc:
         busco -i {input.proteome} -o {output} -l {params.lineage} \
             -m proteins -c {threads} --force --download_path {params.busco_dir} &> {log}
         """
+
+rule agat_cleaning:
+    input:
+        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf")
+    output:
+        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "agat_cleaning_{group}.log")
+    conda:
+        os.path.join(dir.envs, "agat.yaml")
+    threads:
+        config.resources.small.cpus,
+    shell:
+        """
+        gat_convert_sp_gxf2gxf.pl -g {input} -o {output} &> {log}
+        """
+
+rule agat_stats:
+    input:
+        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+    output:
+        os.path.join(dir.out.qc_agat,"{group}","{group}_stats.txt")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "agat_stats_{group}.log")
+    conda:
+        os.path.join(dir.envs, "agat.yaml")
+    threads:
+        config.resources.small.cpus,
+    shell:
+        """
+        agat_sp_statistics.pl --gff {input} -o {output} &> {log}
+        """
+
+    
