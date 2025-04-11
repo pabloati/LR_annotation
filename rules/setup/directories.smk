@@ -54,6 +54,7 @@ dir.out.isoseq_cluster = os.path.join(dir.out.isoseq, "cluster")
 dir.out.isoseq_mapping = os.path.join(dir.out.isoseq, "mapping")
 dir.out.isoseq_collapsed = os.path.join(dir.out.isoseq, "collapsed")
 
+dir.out.isoquant = os.path.join(dir.out.base, "isoquant")
 ## Hints
 dir.out.evidence_driven = os.path.join(dir.out.base, "evidence_driven")
 dir.out.ed_sqanti = os.path.join(dir.out.evidence_driven, "sqanti")
