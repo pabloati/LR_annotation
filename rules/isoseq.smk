@@ -145,7 +145,7 @@ elif input_type == "fasta":
         threads:
             config.resources.small.cpus,
         log:
-            os.path.join(dir.logs,"isoseq_isoquant_{sample}.log")
+            os.path.join(dir.logs,"isoseq_isoquant.log")
         shell:
             """
             isoquant.py --reference {input.genome} --fastq {input.reads} \
