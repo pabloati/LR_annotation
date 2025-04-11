@@ -132,7 +132,7 @@ elif input_type == "fasta":
             reads = config.required.input,
             genome = config.required.genome
         output:
-            expand(os.path.join(dir.out.isoseq_isoquant,"{sample}","{sample}.transcript_models.gtf"),sample=samples),
+            expand(os.path.join(dir.out.isoquant,"{sample}","{sample}.transcript_models.gtf"),sample=samples),
         resources:
             slurm_extra = f"'--qos={config.resources.small.qos}'",
             cpus_per_task = config.resources.small.cpus,
