@@ -288,4 +288,28 @@ else:
             mem = config.resources.big.mem,
             runtime =  config.resources.big.time
         shell:
-            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} &> {log}"
+            """
+            augustus --species={params.name} {input.genome} --protein=on \
+            --codingseq=on > {output} &> {log}
+            """
+
+rule agat_cleaning:
+    input:
+        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf")
+    output:
+        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "agat_cleaning_{group}.log")
+    conda:
+        os.path.join(dir.envs, "agat.yaml")
+    threads:
+        config.resources.small.cpus,
+    shell:
+        """
+        agat_convert_sp_gxf2gxf.pl -g {input} -o {output} &> {log}
+        """

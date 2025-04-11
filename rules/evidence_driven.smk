@@ -1,7 +1,8 @@
-localrules: gff2bed12, tama_setup
 
 size = len(samples)
 if size > 1:
+    localrules: gff2bed12, tama_setup
+
     rule gff2bed12: # local_rule
         input:
             os.path.join(dir.tools_tama,"tama_installed.done"),
