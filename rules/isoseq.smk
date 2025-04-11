@@ -148,10 +148,10 @@ elif input_type == "fasta":
             os.path.join(dir.logs,"isoseq_isoquant.log")
         shell:
             """
-            prefix=$(basename {output} .transcript_models.gtf))
+            prefix=$(basename {output} .transcript_models.gtf)
             isoquant.py --reference {input.genome} --fastq {input.reads} \
-                --output {dir.out.isoseq_isoquant} --prefix $prefix \
-                --threads {threads} --data_type {params.data_type} --force $> {log}
+                --output {dir.out.isoquant} --prefix $prefix \
+                --threads {threads} --data_type {params.data_type} --force &> {log}
             """
 
 
