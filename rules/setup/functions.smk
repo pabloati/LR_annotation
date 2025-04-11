@@ -54,6 +54,9 @@ def get_input_type(filename):
     
 def get_sqanti_input(approach,size):
     if size == 1:
-        return get_tama_input(approach)
+        if approach == "isoseq3":
+            return os.path.join(dir.out.isoseq_collapsed,"{group}","{group}.collapsed.gff")
+    elif approach == "isoquant":
+            return os.path.join(dir.out.isoquant,"{group}","{group}.transcript_models.gtf")
     elif size == 2:
         return os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf") 
