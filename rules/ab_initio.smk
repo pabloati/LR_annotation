@@ -275,7 +275,7 @@ else:
             genome = config.required.genome,
             mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
         output:
-            gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+            gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gxf")
         conda:
             os.path.join(dir.envs,"augustus.yaml")
         params:
@@ -295,9 +295,9 @@ else:
 
 rule agat_cleaning_ab_initio:
     input:
-        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gxf")
     output:
-         os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gtf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gff3")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -312,4 +312,25 @@ rule agat_cleaning_ab_initio:
     shell:
         """
         agat_convert_sp_gxf2gxf.pl -g {input} -o {output} &> {log}
+        """
+
+rule reformat_prediction:
+    input:
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gff3")
+    output:
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gtf")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "agat_cleaning_ab_initio.log")
+    conda:
+        os.path.join(dir.envs, "agat.yaml")
+    threads:
+        config.resources.small.cpus,
+    shell:
+        """
+        gffread {input} -T -o {output}
         """
