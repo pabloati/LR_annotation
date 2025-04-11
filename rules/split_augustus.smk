@@ -45,7 +45,7 @@ rule ed_augusuts_per_chromosome:
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
         --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on \
-        --uniqueGeneId=True --alternatives-from-evidence=True --alternaltives-from-sampling=True > {output} 
+        --uniqueGeneId=True --alternatives-from-evidence=True --alternatives-from-sampling=True > {output} 
         """
 
 rule merge_ed_predicitons:
@@ -92,7 +92,7 @@ rule ab_augustus_per_chromosome:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --protein=on --codingseq=on \
-        --uniqueGeneId=True --alternaltives-from-sampling=True > {output} 
+        --alternatives-from-sampling=True > {output} 
         """
 
 rule merge_ab_predictions:
