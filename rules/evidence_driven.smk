@@ -4,7 +4,7 @@ localrules: gff2bed12, tama_setup
 rule gff2bed12: # local_rule
     input:
         os.path.join(dir.tools_tama,"tama_installed.done"),
-        gtf = os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff")
+        gtf = get_tama_input(config.required.discovery_approach)
     output:
         os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12")
     conda:

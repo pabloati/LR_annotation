@@ -35,3 +35,20 @@ def get_genome_name(file):
 #         return os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
 #     elif config.augustus.prediction == "evidence_driven":
 #         return os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf").
+
+def get_tama_input(approach):
+    if approach == "isoseq3":
+        return os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff")
+    elif approach == "isoquant":
+        return os.path.join(dir.out.isoquant,"{sample}","{sample}.transcript_models.gtf")
+
+def get_input_type(filename):
+    if filename.endswith(".bam"):
+        return "bam"
+    elif filename.endswith(".fastq"):
+        return "fasta"
+    elif filename.endswith(".fasta") or filename.endswith(".fa"):
+        return "fasta"
+    else:
+        raise ValueError("Unsupported file type. Please provide a .bam, .fastq, or .fasta file.")
+    
