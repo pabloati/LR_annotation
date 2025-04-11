@@ -129,7 +129,7 @@ if input_type == "bam":
 elif input_type == "fasta":
     rule IsoQuant:
         input:
-            reads = config.required.input
+            reads = config.required.input,
             genome = config.required.genome
         output:
             expand(os.path.join(dir.out.isoseq_isoquant,"{sample}","{sample}.transcript_models.gtf"),sample=samples),
