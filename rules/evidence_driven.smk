@@ -1,83 +1,83 @@
 localrules: gff2bed12, tama_setup
 
+size = len(samples)
+if size > 1:
+    rule gff2bed12: # local_rule
+        input:
+            os.path.join(dir.tools_tama,"tama_installed.done"),
+            gtf = get_tama_input(config.required.discovery_approach)
+        output:
+            os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12")
+        conda:
+            os.path.join(dir.envs,"tama.yaml")
+        threads:
+            config.resources.small.cpus,
+        shell:
+            """
+            python {dir.tools_tama}/tama_go/format_converter/tama_format_gff_to_bed12_cupcake.py {input.gtf} {output}
+            """
+    rule tama_setup: # local_rule
+        input:
+            files = expand(os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12"),sample=samples),
+            setup = config.required.samples_setup
+        output:
+            os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
+        conda:
+            os.path.join(dir.envs,"sqanti3.yaml")
+        threads:
+            config.resources.small.cpus,
+        log: 
+            os.path.join(dir.logs,"tama_setup_{group}.log")
+        script:
+            f"{dir.scripts}/create_tama_filelist.py"
 
-rule gff2bed12: # local_rule
-    input:
-        os.path.join(dir.tools_tama,"tama_installed.done"),
-        gtf = get_tama_input(config.required.discovery_approach)
-    output:
-        os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12")
-    conda:
-        os.path.join(dir.envs,"tama.yaml")
-    threads:
-        config.resources.small.cpus,
-    shell:
-        """
-        python {dir.tools_tama}/tama_go/format_converter/tama_format_gff_to_bed12_cupcake.py {input.gtf} {output}
-        """
 
-rule tama_setup: # local_rule
-    input:
-        files = expand(os.path.join(dir.out.ed_hints,"{sample}","{sample}_filtered.bed12"),sample=samples),
-        setup = config.required.samples_setup
-    output:
-        os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
-    conda:
-        os.path.join(dir.envs,"sqanti3.yaml")
-    threads:
-        config.resources.small.cpus,
-    log: 
-        os.path.join(dir.logs,"tama_setup_{group}.log")
-    script:
-        f"{dir.scripts}/create_tama_filelist.py"
+    rule tama_merge: 
+        input:
+            filelist = os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
+        output:
+            os.path.join(dir.out.ed_hints,"{group}","{group}_merge.txt")
+        conda:
+            os.path.join(dir.envs,"tama.yaml")
+        threads:
+            config.resources.small.cpus,
+        resources:
+            slurm_extra = f"'--qos={config.resources.small.qos}'",
+            cpus_per_task = config.resources.small.cpus,
+            mem = config.resources.small.mem,
+            runtime =  config.resources.small.time
+        log:
+            os.path.join(dir.logs,"tama_merge_{group}.log")
+        shell:
+            """
+            prefix=$(echo {output} | sed 's/_merge.txt//g')
+            python {dir.tools_tama}/tama_merge.py -f {input} -p $prefix &> {log}
+            """
 
-
-rule tama_merge: 
-    input:
-        filelist = os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
-    output:
-        os.path.join(dir.out.ed_hints,"{group}","{group}_merge.txt")
-    conda:
-        os.path.join(dir.envs,"tama.yaml")
-    threads:
-        config.resources.small.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    log:
-        os.path.join(dir.logs,"tama_merge_{group}.log")
-    shell:
-        """
-        prefix=$(echo {output} | sed 's/_merge.txt//g')
-        python {dir.tools_tama}/tama_merge.py -f {input} -p $prefix &> {log}
-        """
-
-rule tama2gtf:
-    input:
-        bed12 = os.path.join(dir.out.ed_hints,"{group}","{group}_merge.txt")
-    output:
-        os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf")
-    conda:
-        os.path.join(dir.envs,"tama.yaml")
-    threads:
-        config.resources.small.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    log:
-        os.path.join(dir.logs,"tama2gtf_{group}.log")
-    shell:
-        """
-        python {dir.tools_tama}/tama_go/format_converter/tama_convert_bed_gtf_ensembl_no_cds.py {input} {output} $>{log}
-        """
+    rule tama2gtf:
+        input:
+            bed12 = os.path.join(dir.out.ed_hints,"{group}","{group}_merge.txt")
+        output:
+            os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf")
+        conda:
+            os.path.join(dir.envs,"tama.yaml")
+        threads:
+            config.resources.small.cpus,
+        resources:
+            slurm_extra = f"'--qos={config.resources.small.qos}'",
+            cpus_per_task = config.resources.small.cpus,
+            mem = config.resources.small.mem,
+            runtime =  config.resources.small.time
+        log:
+            os.path.join(dir.logs,"tama2gtf_{group}.log")
+        shell:
+            """
+            python {dir.tools_tama}/tama_go/format_converter/tama_convert_bed_gtf_ensembl_no_cds.py {input} {output} $>{log}
+            """
 
 rule run_sqanti:
     input:
-        isoforms = os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf"),
+        isoforms =  get_sqanti_input(config.required.approach,size),
         ref_gff = get_sqanti_gtf(config),
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")

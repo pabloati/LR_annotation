@@ -52,3 +52,8 @@ def get_input_type(filename):
     else:
         raise ValueError("Unsupported file type. Please provide a .bam, .fastq, or .fasta file.")
     
+def get_sqanti_input(approach,size):
+    if size == 1:
+        get_tama_input(approach)
+    elif size == 2:
+        return os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf") 
