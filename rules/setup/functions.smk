@@ -56,7 +56,7 @@ def get_sqanti_input(approach,size):
     if size == 1:
         if approach == "isoseq3":
             return os.path.join(dir.out.isoseq_collapsed,"{group}","{group}.collapsed.gff")
-    elif approach == "isoquant":
+        elif approach == "isoquant":
             return os.path.join(dir.out.isoquant,"{group}","{group}.transcript_models.gtf")
     elif size == 2:
         return os.path.join(dir.out.ed_hints,"{group}","{group}_merged.gtf") 
