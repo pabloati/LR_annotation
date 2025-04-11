@@ -77,7 +77,7 @@ if size > 1:
 
 rule run_sqanti:
     input:
-        isoforms =  get_sqanti_input(config.required.approach,size),
+        isoforms =  get_sqanti_input(config.required.discovery_approach,size),
         ref_gff = get_sqanti_gtf(config),
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")
