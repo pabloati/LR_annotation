@@ -2,7 +2,7 @@ import os
 
 def get_sqanti_gtf(config):
     if config.augustus.prediction == "ab_initio":
-        return os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        return os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gtf")
     elif config.augustus.prediction == "evidence_driven":
         return config.augustus.reference_gtf
 
@@ -51,7 +51,7 @@ def get_input_type(filename):
         return "fasta"
     else:
         raise ValueError("Unsupported file type. Please provide a .bam, .fastq, or .fasta file.")
-    
+
 def get_sqanti_input(approach,size):
     if size == 1:
         if approach == "isoseq3":
