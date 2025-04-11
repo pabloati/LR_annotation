@@ -293,18 +293,18 @@ else:
             --codingseq=on > {output} &> {log}
             """
 
-rule agat_cleaning:
+rule agat_cleaning_ab_initio:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
     output:
-        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+         os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gtf")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "agat_cleaning_{group}.log")
+        os.path.join(dir.logs, "agat_cleaning_ab_initio.log")
     conda:
         os.path.join(dir.envs, "agat.yaml")
     threads:
