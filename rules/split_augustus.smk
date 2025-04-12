@@ -92,7 +92,7 @@ rule ab_augustus_per_chromosome:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --protein=on --codingseq=on \
-        --alternatives-from-sampling=True > {output} 
+        --alternatives-from-sampling=True --uniqueGeneId=True > {output} 
         """
 
 rule merge_ab_predictions:

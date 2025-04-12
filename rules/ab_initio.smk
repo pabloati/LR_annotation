@@ -295,7 +295,7 @@ else:
 
 rule agat_cleaning_ab_initio:
     input:
-        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gxf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
     output:
         os.path.join(dir.out.ab_augustus,"ab_initio_prediction_cleaned.gff3")
     resources:
