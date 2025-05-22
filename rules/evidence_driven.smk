@@ -82,8 +82,7 @@ rule run_sqanti:
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")
     output:
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf.cds.gff")
+        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
     threads:
         config.resources.medium.cpus,
     conda:
@@ -99,21 +98,23 @@ rule run_sqanti:
         """
         python {dir.tools_sqanti}/sqanti3_qc.py {input.isoforms} {input.ref_gff} {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
+        mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.cds.gff {output}
         """
 
 rule filter_isoforms:
     input:
         classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
-        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.gtf.cds.gff")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
     output:
-        classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.filt.txt"),
-        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.filt.gtf")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_filtered.gtf")
     conda:
         os.path.join(dir.envs,"sqanti3.yaml")
     log:
         os.path.join(dir.logs,"filter_sqanti_{group}.log")
     threads:
         config.resources.small.cpus,
+    params:
+        json_rules = config.sqanti.json_rules,
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -121,12 +122,14 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-        Rscript {dir.scripts}/filterClassification.R {input.classification} {input.gtf} {output.classification} {output.gtf} &> {log}
+        python {dir.tools_sqanti}/sqanti3_filter.py --sqanti_class {input.classification} --filter_gtf {input.gtf} \
+            -j {params.json_rules} --outdir {dir.out.ed_sqanti}/{wildcards.group} \
+            --output {wildcards.group} -t {threads} &> {log}
         """
 
 rule extract_hints:
     input:
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.filt.gtf")
+        os.path.join(dir.out.ed_sqanti,"{group}","{group}_filtered.gtf")
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     conda:
