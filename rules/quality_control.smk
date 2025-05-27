@@ -1,10 +1,10 @@
 
 rule generate_proteome:
     input:
-        annot = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff"), 
+        annot = os.path.join(dir.out.ed_augustus,"{group}_prediction.gff"), 
         reference = config.required.genome,
     output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.aa")
+        os.path.join(dir.out.ed_augustus,"{group}_prediction.aa")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -23,7 +23,7 @@ rule generate_proteome:
 
 rule omamer:
     input:
-        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.aa"),
+        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction.aa"),
         omark_db = os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     output:
         os.path.join(dir.out.qc_omark,"{group}","{group}.omamer")
@@ -65,7 +65,7 @@ rule omark:
 
 rule busco_qc:
     input:
-        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.aa"),        
+        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction.aa"),        
     output:
         directory(os.path.join(dir.out.qc_busco,"{group}")),
     resources:
@@ -90,7 +90,7 @@ rule busco_qc:
 
 rule agat_cleaning:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff")
+        os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
     output:
         os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff")
     resources:

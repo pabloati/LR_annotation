@@ -191,18 +191,3 @@ else:
             augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
             --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}
             """
-
-rule rename_augustus:
-    input:
-        os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gff")
-    output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff")
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    log:
-        os.path.join(dir.logs, "rename_augustus_{group}.log")
-    script:
-        f"{dir.scripts}/rename_augustus_genes.py"
