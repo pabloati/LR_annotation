@@ -122,8 +122,8 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-        python {dir.tools_sqanti}/sqanti3_filter.py --sqanti_class {input.classification} --filter_gtf {input.gtf} \
-            -j {params.json_rules} --outdir {dir.out.ed_sqanti}/{wildcards.group} \
+        python {dir.tools_sqanti}/sqanti3_filter.py rules --sqanti_class {input.classification} --filter_gtf {input.gtf} \
+            -j {params.json_rules} --dir {dir.out.ed_sqanti}/{wildcards.group} \
             --output {wildcards.group} -t {threads} &> {log}
         """
 
