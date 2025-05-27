@@ -51,7 +51,7 @@ rule merge_ed_predictions:
     input:
         expand(os.path.join(dir.out.ed_augustus,"split","{{group}}_{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        os.path.join(dir.out.ed_augustus,"split","{group}_prediction.gff")
+        temp(os.path.join(dir.out.ed_augustus,"{group}_prediction_naive.gff"))
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -67,6 +67,22 @@ rule merge_ed_predictions:
             fi
         done
         """
+
+rule rename_ed_augustus:
+    input:
+        os.path.join(dir.out.ed_augustus,"{group}_prediction_naive.gff")
+    output:
+        os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "rename_augustus_{group}.log")
+    script:
+        f"{dir.scripts}/rename_augustus_genes.py"
+
 
 rule ab_augustus_per_chromosome:
     input:
@@ -111,8 +127,8 @@ rule merge_ab_predictions:
         """
 
 # Renaming predictions in the split mode
-
 rule rename_ab_augustus:
+
     input:
         os.path.join(dir.out.ab_augustus,"split","ab_initio_prediction.gff")
     output:
@@ -127,17 +143,3 @@ rule rename_ab_augustus:
     script:
         f"{dir.scripts}/rename_augustus_genes.py"
 
-rule rename_ed_augustus:
-    input:
-        os.path.join(dir.out.ed_augustus,"split","{group}_prediction.gff")
-    output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    log:
-        os.path.join(dir.logs, "rename_augustus_{group}.log")
-    script:
-        f"{dir.scripts}/rename_augustus_genes.py"
