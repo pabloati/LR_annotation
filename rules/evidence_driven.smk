@@ -106,7 +106,7 @@ rule filter_isoforms:
         classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
         gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
     output:
-        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_filtered.gtf")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}.filtered.gtf")
     conda:
         os.path.join(dir.envs,"sqanti3.yaml")
     log:
@@ -129,7 +129,7 @@ rule filter_isoforms:
 
 rule extract_hints:
     input:
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_filtered.gtf")
+        os.path.join(dir.out.ed_sqanti,"{group}","{group}.filtered.gtf")
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     conda:
