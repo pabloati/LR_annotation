@@ -122,15 +122,9 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-        if [ {params.json_rules} == "" ];then
-            rule_file={dir.envs}/sqanti3_rules.json
-        else
-            rule_file={params.json_rules}
-        fi
-
         python {dir.tools_sqanti}/sqanti3_filter.py rules --sqanti_class {input.classification} --filter_gtf {input.gtf} \
-            -j $rule_file --dir {dir.out.ed_sqanti}/{wildcards.group} \
-            --output {wildcards.group} -t {threads} &> {log}
+            -j {params.json_rules} --dir {dir.out.ed_sqanti}/{wildcards.group} \
+            --output {wildcards.group} &> {log}
         """
 
 rule extract_hints:
