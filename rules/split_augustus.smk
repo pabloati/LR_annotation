@@ -51,7 +51,7 @@ rule merge_ed_predictions:
     input:
         expand(os.path.join(dir.out.ed_augustus,"{{group}}","split","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gff")
+        os.path.join(dir.out.ed_augustus,"{group}","split","{group}_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
