@@ -51,7 +51,7 @@ rule merge_ed_predicitons:
     input:
         expand(os.path.join(dir.out.ed_augustus,"{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        gtf = os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gtf")
+        os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -97,7 +97,7 @@ rule merge_ab_predictions:
     input:
         expand(os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,

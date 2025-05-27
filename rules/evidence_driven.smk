@@ -173,7 +173,7 @@ else:
             mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
             gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
         output:
-            gtf = os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gtf")
+            os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gff")
         conda:
             os.path.join(dir.envs,"augustus.yaml")
         params:
@@ -194,9 +194,9 @@ else:
 
 rule rename_augustus:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gtf")
+        os.path.join(dir.out.ed_augustus,"{group}","{group}_prediction.gff")
     output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf")
+        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
