@@ -98,7 +98,7 @@ rule run_sqanti:
         """
         python {dir.tools_sqanti}/sqanti3_qc.py {input.isoforms} {input.ref_gff} {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
-        mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.cds.gff {output}
+        mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.gtf.cds.gff {output}
         """
 
 rule filter_isoforms:
