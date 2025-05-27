@@ -82,7 +82,7 @@ rule run_sqanti:
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")
     output:
-        classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt")
+        classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt"),
         gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
     threads:
         config.resources.medium.cpus,
