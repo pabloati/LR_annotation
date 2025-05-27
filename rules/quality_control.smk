@@ -1,7 +1,7 @@
 
 rule generate_proteome:
     input:
-        annot = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf"), 
+        annot = os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff"), 
         reference = config.required.genome,
     output:
         os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.aa")
@@ -90,9 +90,9 @@ rule busco_qc:
 
 rule agat_cleaning:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gtf")
+        os.path.join(dir.out.ed_augustus,"{group}_prediction_renamed.gff")
     output:
-        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -111,7 +111,7 @@ rule agat_cleaning:
 
 rule agat_stats:
     input:
-        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf")
+        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff")
     output:
         os.path.join(dir.out.qc_agat,"{group}","{group}_stats.txt")
     resources:
