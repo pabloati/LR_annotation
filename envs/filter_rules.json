@@ -2,7 +2,7 @@
     "rest":[
         {"RTS_stage": "TRUE",
         "exons": 2,
-        "seq_A_downstream_TSS": [0,59],
+        "seq_A_downstream_TTS": [0,59],
         "all_canonical": "canonical",
         "predicted_NMD": "TRUE"
         }
