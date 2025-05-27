@@ -129,7 +129,7 @@ rule rename_ab_augustus:
 
 rule rename_ed_augustus:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}","split","{group}_prediction.gff")
+        os.path.join(dir.out.ed_augustus,"split","{group}_prediction.gff")
     output:
         os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
     resources:
