@@ -305,4 +305,4 @@ rule gff2gtf:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     shell:
-        "gffread {input.gff} -T -o {output} &> {log}"
+        "gffread {input} -T -o {output} &> {log}"
