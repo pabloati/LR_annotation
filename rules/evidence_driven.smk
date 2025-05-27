@@ -114,7 +114,7 @@ rule filter_isoforms:
     threads:
         config.resources.small.cpus,
     params:
-        json_rules = config.sqanti.json_rules,
+        json_rules = config.sqanti.json_rules if config.sqanti.json_rules is not None else os.path.join(dir.envs,"sqanti3_rules.json"),
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
