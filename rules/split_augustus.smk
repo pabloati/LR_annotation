@@ -128,7 +128,6 @@ rule merge_ab_predictions:
 
 # Renaming predictions in the split mode
 rule rename_ab_augustus:
-
     input:
         os.path.join(dir.out.ab_augustus,"split","ab_initio_prediction.gff")
     output:
