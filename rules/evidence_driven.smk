@@ -82,7 +82,8 @@ rule run_sqanti:
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")
     output:
-        os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
+        classification = os.path.join(dir.out.ed_sqanti,"{group}","{group}_classification.txt")
+        gtf = os.path.join(dir.out.ed_sqanti,"{group}","{group}_corrected.cds.gtf")
     threads:
         config.resources.medium.cpus,
     conda:
@@ -98,7 +99,7 @@ rule run_sqanti:
         """
         python {dir.tools_sqanti}/sqanti3_qc.py --isoforms {input.isoforms} --refGTF {input.ref_gff} --refFasta {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
-        mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.gtf.cds.gff {output}
+        mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.gtf.cds.gff {output.gtf}
         """
 
 rule filter_isoforms:
