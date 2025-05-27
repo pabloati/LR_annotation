@@ -127,7 +127,7 @@ rule rename_ab_augustus:
     script:
         f"{dir.scripts}/rename_augustus_genes.py"
 
-rule rename_augustus:
+rule rename_ed_augustus:
     input:
         os.path.join(dir.out.ed_augustus,"{group}","split","{group}_prediction.gff")
     output:
