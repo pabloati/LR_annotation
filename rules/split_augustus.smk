@@ -25,7 +25,7 @@ rule ed_augusuts_per_chromosome:
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
         gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
     output:
-        os.path.join(dir.out.ed_augustus,"split","{group}_{chromosome}.prediction.gff")
+        os.path.join(dir.out.ed_augustus,"split","{group}","{chromosome}.prediction.gff")
     conda:
         f"{dir.envs}/augustus.yaml"
     params:
@@ -49,7 +49,7 @@ rule ed_augusuts_per_chromosome:
 
 rule merge_ed_predictions:
     input:
-        expand(os.path.join(dir.out.ed_augustus,"split","{{group}}_{chromosome}.prediction.gff"),chromosome=chromosomes)
+        expand(os.path.join(dir.out.ed_augustus,"split","{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
         temp(os.path.join(dir.out.ed_augustus,"{group}_prediction_naive.gff"))
     resources:
