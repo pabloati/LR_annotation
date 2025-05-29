@@ -40,7 +40,7 @@ rule busco_run:
     shell:
         """
         busco -i {input} -o {output} \
-            -l {params.lineage} -m genome --augustus \
+            -l {params.lineage} -m genome --miniprot \
             -c {threads} --download_path {params.busco_dir} &> {log}
         """
 
@@ -106,7 +106,7 @@ rule concatenate_gff:
     script:
         os.path.join(dir.scripts,"concatenate_GFF.py")
 
-rule gtf2genbank:
+rule gff2genbank:
     input:
         genome = config.required.genome,
         gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
@@ -117,7 +117,7 @@ rule gtf2genbank:
     params:
         flanking_region = config.ab_initio.flanking_region
     log:
-        os.path.join(dir.logs,"gtf2genbank.log")
+        os.path.join(dir.logs,"gff2genbank.log")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -275,7 +275,7 @@ else:
             genome = config.required.genome,
             mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
         output:
-            gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+            os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gff")
         conda:
             os.path.join(dir.envs,"augustus.yaml")
         params:
@@ -289,3 +289,20 @@ else:
             runtime =  config.resources.big.time
         shell:
             "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} &> {log}"
+
+rule gff2gtf:
+    input:
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gff")
+    output:
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+    conda:
+        os.path.join(dir.envs,"sqanti3.yaml")
+    log:
+        os.path.join(dir.logs,"gff2gtf.log")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    shell:
+        "gffread {input} -T -o {output} &> {log}"

@@ -23,7 +23,7 @@ include: os.path.join("rules","quality_control.smk")
 
 rule all:
     input:
-        expand(os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gtf"),group=groups),
+        expand(os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff"),group=groups),
         expand(os.path.join(dir.out.qc_omark,"{group}","{group}.pdf"),group=groups),
         expand(os.path.join(dir.out.qc_busco,"{group}"),group=groups),
         expand(os.path.join(dir.out.qc_agat,"{group}","{group}_stats.txt"),group=groups),
