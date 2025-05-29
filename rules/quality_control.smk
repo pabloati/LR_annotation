@@ -130,4 +130,27 @@ rule agat_stats:
         agat_sp_statistics.pl --gff {input} -o {output} &> {log}
         """
 
+rule gaqet2_setup:
+    input:
+        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done"))
+    output:
+        touch(os.path.join(dir.tools_gaqet2,"gaqet2_setup.done"))
+    conda:
+        os.path.join(dir.envs, "gaqet2.yaml")
+    params:
+        config = os.path.join(dir.tools_gaqet2, "gaqet2_config.yaml"),
+        lineage = config.busco.lineage,
+    log:
+        os.path.join(dir.logs, "gaqet2_setup.log")
+    script:
+        f"{dir.scripts}/gaqet2_setup.py"
+
     
+rule gaqet2:
+    input:
+        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done"))
+        config = os.path.join(dir.envs, "gaqet2_config.yaml"),
+    output:
+    
+    conda:
+        os.path.join(dir.envs, "gaqet2.yaml")
