@@ -17,11 +17,11 @@ rule lima:
     input:
         config.required.input
     output:
-        name = os.path.join(dir.out.isoseq_lima,"fl.bam"),
-        json = os.path.join(dir.out.isoseq_lima,"fl.json")
+        os.path.join(dir.out.isoseq_lima,"fl.lima.report")
     conda:
         f"{dir.envs}/isoseq.yaml"
     params:
+        output = os.path.join(dir.out.isoseq_lima,"fl.bam"),
         primers = config.isoseq.primers,
         samples = config.isoseq.primers_to_samples
     log:
@@ -35,14 +35,14 @@ rule lima:
         runtime =  config.resources.big.time
     shell:
         """
-        lima {input} {params.primers} {output.name} \
+        lima {input} {params.primers} {params.output} \
             --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
             --split-named --biosample-csv {params.samples} --log-level INFO --log-file {log}
         """
 
 rule lima_renaming:
     input:
-        os.path.join(dir.out.isoseq_lima,"fl.json")
+        os.path.join(dir.out.isoseq_lima,"fl.lima.report")
     output:
         expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples),
     params:
