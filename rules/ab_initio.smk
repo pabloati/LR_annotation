@@ -40,7 +40,7 @@ rule busco_run:
     shell:
         """
         busco -i {input} -o {output} \
-            -l {params.lineage} -m genome --miniprot \
+            -l {params.lineage} -m genome --augustus \
             -c {threads} --download_path {params.busco_dir} &> {log}
         """
 

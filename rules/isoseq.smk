@@ -37,7 +37,7 @@ rule lima:
         """
         lima {input} {params.primers} {output.name} \
             --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
-            --split-named --biosample-csv {params.samples} &> {log}
+            --split-named --biosample-csv {params.samples} --log-level INFO --log-file {log}
         """
 
 rule lima_renaming:

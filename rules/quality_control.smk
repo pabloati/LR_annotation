@@ -146,11 +146,11 @@ rule gaqet2_setup:
         f"{dir.scripts}/gaqet2_setup.py"
 
     
-rule gaqet2:
-    input:
-        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done"))
-        config = os.path.join(dir.envs, "gaqet2_config.yaml"),
-    output:
-    
-    conda:
-        os.path.join(dir.envs, "gaqet2.yaml")
+#rule gaqet2:
+#    input:
+#        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done")),
+#        config = os.path.join(dir.envs, "gaqet2_config.yaml"),
+#    output:
+#    
+#    conda:
+#        os.path.join(dir.envs, "gaqet2.yaml")
