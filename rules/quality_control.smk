@@ -132,7 +132,7 @@ rule agat_stats:
 
 rule gaqet2_setup:
     input:
-        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done"))
+        os.path.join(dir.tools_gaqet2,"gaqet2_installed.done")
     output:
         touch(os.path.join(dir.tools_gaqet2,"gaqet2_setup.done"))
     conda:

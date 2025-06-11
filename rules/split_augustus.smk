@@ -38,8 +38,6 @@ rule ed_augusuts_per_chromosome:
         runtime =  config.resources.big.time
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{group}_{chromosome}.log")
     shell:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
@@ -101,8 +99,6 @@ rule ab_augustus_per_chromosome:
         runtime =  config.resources.big.time
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{chromosome}.log")
     shell:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
