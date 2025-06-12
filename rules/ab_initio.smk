@@ -288,7 +288,7 @@ else:
             mem = config.resources.big.mem,
             runtime =  config.resources.big.time
         shell:
-            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} &> {log}"
+            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} 2> {log}"
 
 rule gff2gtf:
     input:

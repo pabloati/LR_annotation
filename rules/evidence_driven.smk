@@ -180,7 +180,7 @@ else:
             name = config.augustus.species_name,
             extcfg = config.augustus.config if config.evidence_driven.config else f"{dir.envss}/extrinsic.M.RM.PB.cfg"
         log:
-            os.path.join(dir.logs,"run_augustus_{group}.log")
+            os.path.join(dir.logs,"run_augustus_ed_{group}.log")
         resources:
             slurm_extra = f"'--qos={config.resources.big.qos}'",
             cpus_per_task = config.resources.big.cpus,
@@ -189,5 +189,5 @@ else:
         shell:
             """
             augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
-            --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}
+            --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 2> {log}
             """
