@@ -92,8 +92,6 @@ rule concatenate_gff:
         busco_path = dir.out.ab_busco
     output:
         os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
-    conda:
-        os.path.join(dir.envs,"busco.yaml")
     params:
         lineage = config.ab_initio.lineage,
         gene_type = "single"
