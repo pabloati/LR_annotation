@@ -1,4 +1,5 @@
 # Snakefile for ab initio gene prediction
+import os
 
 # Setup local rules (do not require much resources)
 localrules: new_species, identify_bad_genes, extract_stop_codon_freq
