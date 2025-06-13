@@ -105,8 +105,8 @@ rule concatenate_gff:
     run:
         with open(input.gene_list) as f:
             gene_names = [line.strip() for line in f if line.strip()]
-        gff_path = os.path.join(input.busco_path,f"run_{snakemake.params.lineage}",
-                                "busco_sequences",f"{snakemake.params.gene_type}_copy_busco_sequences")
+        gff_path = os.path.join(input.busco_path,f"run_{params.lineage}",
+                                "busco_sequences",f"{params.gene_type}_copy_busco_sequences")
         gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
         shell("cat {gff_files} > {output}")
 
