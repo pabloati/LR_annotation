@@ -103,8 +103,13 @@ rule concatenate_gff:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
-    script:
-        os.path.join(dir.scripts,"concatenate_GFF.py")
+    run:
+        with open(input.gene_list) as f:
+            gene_names = [line.strip() for line in f if line.strip()]
+        gff_path = os.path.join(input.busco_path,f"run_{snakemake.params.lineage}",
+                                "busco_sequences",f"{snakemake.params.gene_type}_copy_busco_sequences")
+        gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
+        shell("cat {gff_files} > {output}")
 
 rule gff2genbank:
     input:
