@@ -13,7 +13,7 @@ samples,groups = get_samples_and_groups(config.required.samples_setup)
 genome_name = get_genome_name(config.required.genome)
 
 
-include: os.path.join("rules","isoseq.smk")
+include: os.path.join("rules","transcript_modelling.smk")
 
 include: os.path.join("rules","ab_initio.smk")
 

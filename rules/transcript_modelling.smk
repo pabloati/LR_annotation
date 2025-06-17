@@ -1,111 +1,7 @@
 
-if config.isoseq.subreads:
-    rule consensus_calling:
-        input:
-            config.required.input
-        output:
-            bam = "results/isoannot/input.consensus_calling.bam",
-            report = "results/isoannot/input.consensus_calling.report.txt"
-        conda:
-            f"{dir.envs}/isoseq.yaml"
-        shell:
-            """
-            css {input} {output.bam} --report-file {output.report}
-            """
 
-rule lima:
-    input:
-        config.required.input
-    output:
-        os.path.join(dir.out.isoseq_lima,"fl.lima.report")
-    conda:
-        f"{dir.envs}/isoseq.yaml"
-    params:
-        output = os.path.join(dir.out.isoseq_lima,"fl.bam"),
-        primers = config.isoseq.primers,
-        samples = config.isoseq.primers_to_samples
-    log:
-        os.path.join(dir.logs,"lima_demultiplexing.log")
-    threads:
-        config.resources.big.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.big.qos}'",
-        cpus_per_task = config.resources.big.cpus,
-        mem = config.resources.big.mem,
-        runtime =  config.resources.big.time
-    shell:
-        """
-        lima {input} {params.primers} {params.output} \
-            --isoseq --peek-guess  --split-subdirs --overwrite-biosample-names \
-            --split-named --biosample-csv {params.samples} --log-level INFO --log-file {log}
-        """
 
-rule lima_renaming:
-    input:
-        os.path.join(dir.out.isoseq_lima,"fl.lima.report")
-    output:
-        expand(os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam"),sample=samples),
-    params:
-        samples = config.isoseq.primers_to_samples
-    conda:
-        f"{dir.envs}/isoseq.yaml"
-    threads:
-        config.resources.small.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    log:
-        os.path.join(dir.logs,"lima_renaming.log")
-    script:
-        f"{dir.scripts}/rename_lima_output.py"    
-    
-
-rule refine:
-    input:
-        lima = os.path.join(dir.out.isoseq_lima,"{sample}","{sample}.fl.bam")
-    output:
-        os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
-    conda:
-        f"{dir.envs}/isoseq.yaml"
-    log:
-        os.path.join(dir.logs,"isoseq_refine_{sample}.log")
-    params:
-        primers = config.isoseq.primers
-    threads:
-        config.resources.small.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
-    shell:
-        """
-        isoseq refine --require-polya {input.lima} {params.primers} {output} &> {log}
-        """
-
-rule cluster:
-    input:
-        os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
-    output:
-        bam=os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
-    conda:
-        f"{dir.envs}/isoseq.yaml"
-    log:
-        os.path.join(dir.logs,"isoseq_cluster_{sample}.log")
-    threads:
-        config.resources.small.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.medium.qos}'",
-        cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.small_bigMem.mem,
-        runtime =  config.resources.medium.time
-    shell:
-        """
-        isoseq cluster2 {input} {output.bam} &> {log}
-        """
-
+# TODO: Run this rule only if the input is a BAM file and IsoQANT is not used
 rule bam2fastq:
     input:
         os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam")
@@ -167,7 +63,7 @@ rule index_genome:
 
 rule mapping_reads_pbmm2:
     input:
-        bam = os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.bam"),
+        bam = config.required.input,
         index = os.path.join(dir.tools_index,genome_name,"index.mmi")
     output:
         os.path.join(dir.out.isoseq_mapping,"{sample}.mapping_pbmm2.bam"),
@@ -187,10 +83,11 @@ rule mapping_reads_pbmm2:
         pbmm2 align --preset ISOSEQ --sort {input.index} {input.bam}  {output} &> {log}
         """
 
+# TODO: see how to use the FLNC BAM if we decide to use IsoSeq3
 rule collapse_isoforms:
     input:
         mapped = os.path.join(dir.out.isoseq_mapping,"{sample}.mapping_pbmm2.bam"),
-        flnc = os.path.join(dir.out.isoseq_refine,"{sample}","{sample}.flnc.bam")
+        #flnc = os.path.join(config.required.flnc_dir,"{sample}","{sample}.flnc.bam")
     output:
         os.path.join(dir.out.isoseq_collapsed,"{sample}","{sample}.collapsed.gff"),
     conda:
@@ -206,20 +103,5 @@ rule collapse_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {input.flnc} {output} -j {threads} &> {log}
+        isoseq collapse --do-not-collapse-extra-5exons {input.mapped} {output} -j {threads} &> {log}
         """
-    
-# rule filter_transcripts:
-#     input:
-#         "results/isoannot/{sample}.collapsed"
-#     output:
-#         "results/isoannot/{sample}.filtered"
-#     conda:
-#         f"{dir.envs}/isoseq.yaml"
-#     resources:
-#           slurm_extra = f"'--qos={config.resources.small.qos}'",
-#         cpus_per_task = config.resources.small.cpus,
-#         mem = config.resources.small.mem,
-#         runtime =  config.resources.small.time
-#     script:
-#         f"{dir.envs}/filter_by_count.py"
