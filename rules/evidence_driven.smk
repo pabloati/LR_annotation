@@ -92,11 +92,12 @@ rule run_sqanti:
         os.path.join(dir.logs,"run_sqanti_{group}.log")
     resources:
         slurm_extra = f"'--qos={config.resources.medium.qos}'",
-        cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.medium.mem,
+        cpus_per_task = config.resources.busco.cpus,
+        mem = config.resources.big.mem,
         runtime =  config.resources.medium.time
     shell:
         """
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         python {dir.tools_sqanti}/sqanti3_qc.py --isoforms {input.isoforms} --refGTF {input.ref_gff} --refFasta {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
         mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.cds.gff3 {output.gtf}
@@ -123,6 +124,7 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         python {dir.tools_sqanti}/sqanti3_filter.py rules --sqanti_class {input.classification} --filter_gtf {input.gtf} \
             -j {params.json_rules} --dir {dir.out.ed_sqanti}/{wildcards.group} \
             --output {wildcards.group} &> {log}
