@@ -17,7 +17,9 @@ include: os.path.join("rules","isoseq.smk")
 
 include: os.path.join("rules","ab_initio.smk")
 
-include: os.path.join("rules","evidence_driven.smk")
+include: os.path.join("rules","transcript_modelling.smk")
+
+#include: os.path.join("rules","evidence_driven.smk")
 
 include: os.path.join("rules","quality_control.smk")
 
