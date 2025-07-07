@@ -5,7 +5,7 @@ config = ap.AttrMap(config)
 
 # Functions
 
-def get_samples(filename):
+def get_samples_and_files(filename):
     """
     Get samples from the config file.
     """
