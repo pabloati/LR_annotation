@@ -17,7 +17,6 @@ def calculate_gene_number(file_path):
         print(f"Error: Unable to read the file '{file_path}'.")
         return None
 
-
 rule busco_run:
     input:
         genome = config.required.genome
@@ -34,15 +33,16 @@ rule busco_run:
         mem = config.resources.busco.mem,
         runtime =  config.resources.busco.time
     threads:
-        config.resources.busco.cpus,
+        int(config.resources.busco.cpus),
     log:
         os.path.join(dir.logs,"busco_run.log")
     shell:
         """
         busco -i {input} -o {output} \
             -l {params.lineage} -m genome --augustus \
-            -c {threads} --download_path {params.busco_dir} &> {log}
+            -c {resources.cpus_per_task} --download_path {params.busco_dir} &> {log}
         """
+    protected: True
 
 rule busco_gather:
     input:

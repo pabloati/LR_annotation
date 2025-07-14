@@ -70,7 +70,7 @@ rule mapping_reads_pbmm2:
     conda:
         f"{dir.envs}/isoseq.yaml"
     threads:
-        config.resources.big.cpus,
+        int(config.resources.big.cpus),
     resources:
         slurm_extra = f"'--qos={config.resources.big.qos}'",
         cpus_per_task = config.resources.big.cpus,
