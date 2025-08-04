@@ -23,7 +23,7 @@ rule busco_run:
     output:
         directory(dir.out.ab_busco)
     conda:
-        f"{dir.envs}/busco.yaml"  
+        f"{dir.envs}/busco.yaml"
     params:
         busco_dir = dir.tools_busco,
         lineage = config.ab_initio.lineage
@@ -42,7 +42,6 @@ rule busco_run:
             -l {params.lineage} -m genome --augustus \
             -c {resources.cpus_per_task} --download_path {params.busco_dir} &> {log}
         """
-    protected: True
 
 rule busco_gather:
     input:
