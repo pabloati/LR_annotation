@@ -7,8 +7,10 @@ for file in sys.argv[0]:
     files_dict[sample] = file
 
 # Read TSV file
+print(f"Reading TSV file: {sys.argv[1]}")
 tsv_df = pd.read_csv(sys.argv[1], sep="\t",index_col=None)
 group = sys.argv[2]
+print(f"Creating filelist for group: {group}")
 group_df = tsv_df[tsv_df['group'] == group]
 
 sample = group_df['id']
