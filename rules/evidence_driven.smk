@@ -28,9 +28,11 @@ rule tama_setup: # local_rule
         config.resources.small.cpus,
     log: 
         os.path.join(dir.logs,"tama_setup_{group}.log")
-    script:
-        f"{dir.scripts}/create_tama_filelist.py"
-
+    shell:
+        """
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+        python {dir.scripts}/create_tama_filelist.py
+        """
 
 rule tama_merge: 
     input:
@@ -124,7 +126,7 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
-         export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         python {dir.tools_sqanti}/sqanti3_filter.py rules --sqanti_class {input.classification} --filter_gtf {input.gtf} \
             -j {params.json_rules} --dir {dir.out.ed_sqanti}/{wildcards.group} \
             --output {wildcards.group} &> {log}
