@@ -31,7 +31,7 @@ rule tama_setup: # local_rule
     shell:
         """
         export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-        python {dir.scripts}/create_tama_filelist.py
+        python {dir.scripts}/create_tama_filelist.py {input.files} {input.setup} {wildcards.group} {output}
         """
 
 rule tama_merge: 
