@@ -23,16 +23,12 @@ rule tama_setup: # local_rule
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
     conda:
-        os.path.join(dir.envs,"sqanti3.yaml")
+        os.path.join(dir.envs,"basic.yaml")
     threads:
         config.resources.small.cpus,
     log: 
         os.path.join(dir.logs,"tama_setup_{group}.log")
-    shell:
-        """
-        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-        python {dir.scripts}/create_tama_filelist.py {input.files} {input.setup} {wildcards.group} {output}
-        """
+    script: {dir.scripts}/create_tama_filelist.py
 
 rule tama_merge: 
     input:

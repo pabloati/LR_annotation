@@ -1,0 +1,7 @@
+name: basic
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.13
+  - pandas=2.2.3
+prefix: /home/patienza/.conda/envs/trial
