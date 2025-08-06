@@ -23,7 +23,7 @@ rule tama_setup: # local_rule
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
     conda:
-        os.path.join(dir.envs,"sqanti3.yaml")
+        os.path.join(dir.envs,"basic.yaml")
     threads:
         config.resources.small.cpus,
     log: 
