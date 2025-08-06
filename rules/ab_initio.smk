@@ -125,7 +125,7 @@ rule filter_genes:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
-        os.path.join(dir.scripts,"filter_genes.R"):
+        os.path.join(dir.scripts,"filter_genes.R")
 
 rule gff2genbank:
     input:
