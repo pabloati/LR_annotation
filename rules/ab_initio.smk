@@ -110,23 +110,22 @@ rule concatenate_gff:
         gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
         shell("cat {gff_files} > {output}")
 
-
 rule filter_miniprot_genes:
     input:
-        gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
+        os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
     output:
         os.path.join(dir.out.ab_augustus_model,"busco_genes.filtered.gff")
     conda:
-        os.path.join(dir.envs,"sqanti3.yaml")
+        os.path.join(dir.envs,"basic.yaml")
     log:
         os.path.join(dir.logs,"filter_miniprot_genes.log")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
-        runtime =  config.resources.small.time
+        runtime =  config.resources.small.time,
     script:
-        f"{dir.scripts}/filter_miniprot_genes.R"
+        os.path.join(dir.scripts,"filter_miniprot_genes.R")
 
 rule gff2genbank:
     input:
