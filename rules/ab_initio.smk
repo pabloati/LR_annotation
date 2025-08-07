@@ -110,7 +110,7 @@ rule concatenate_gff:
         gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
         shell("cat {gff_files} > {output}")
 
-rule filter_genes:
+rule filter_miniprot_genes:
     input:
         gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
     output:
@@ -125,7 +125,7 @@ rule filter_genes:
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     script:
-        os.path.join(dir.scripts,"filter_genes.R")
+        os.path.join(dir.scripts,"filter_miniprot_genes.R")
 
 rule gff2genbank:
     input:
