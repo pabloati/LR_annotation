@@ -124,8 +124,10 @@ rule filter_miniprot_genes:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time,
-    script:
-        os.path.join(dir.scripts,"filter_miniprot_genes.R")
+    shell:
+        """
+        Rscript {os.path.join(dir.scripts,"filter_miniprot_genes.R")} {input.gff} {output}
+        """
 
 rule gff2genbank:
     input:

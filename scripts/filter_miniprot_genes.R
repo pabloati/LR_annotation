@@ -2,9 +2,14 @@ library(dplyr)
 library(readr)
 library(stringr)
 
+# Args
+args <- commandArgs(trailingOnly = TRUE)
+gff_path <- args[1]
+output <- args[2]
+
 gff_cols <- c("chr","source","type","start","end","score","strand","phase","attributes")
 
-df <- read_tsv(snakemake@input[[1]], col_names = gff_cols)
+df <- read_tsv(gff_path, col_names = gff_cols)
 
 df %>% mutate(id = gsub(".*=","",str_split(attributes,";", simplify = TRUE)[,1])) %>%
     group_by(id) %>% 
@@ -17,4 +22,4 @@ df %>% mutate(id = gsub(".*=","",str_split(attributes,";", simplify = TRUE)[,1])
 df %>% mutate(id = gsub(".*=","",str_split(attributes,";", simplify = TRUE)[,1])) %>%
     filter(id %in% good_genes) %>%
     select(-id) %>%
-    write_tsv(snakemake@output[[1]],colnames=F)
+    write_tsv(output,colnames=F)
