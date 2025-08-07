@@ -22,4 +22,4 @@ df %>% mutate(id = gsub(".*=","",str_split(attributes,";", simplify = TRUE)[,1])
 df %>% mutate(id = gsub(".*=","",str_split(attributes,";", simplify = TRUE)[,1])) %>%
     filter(id %in% good_genes) %>%
     select(-id) %>%
-    write_tsv(output,colnames=F)
+    write_tsv(output,col_names=F)

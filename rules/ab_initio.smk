@@ -126,7 +126,7 @@ rule filter_miniprot_genes:
         runtime =  config.resources.small.time,
     shell:
         """
-        Rscript {os.path.join(dir.scripts,"filter_miniprot_genes.R")} {input.gff} {output}
+        Rscript {dir.scripts}/"filter_miniprot_genes.R" {input} {output}
         """
 
 rule gff2genbank:
