@@ -23,9 +23,9 @@ rule ed_augusuts_per_chromosome:
     input:
         os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
-        gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
+        gff = os.path.join(dir.out.ed_hints,"{sample}","{sample}.hints.gff")
     output:
-        os.path.join(dir.out.ed_augustus,"split","{group}","{chromosome}.prediction.gff")
+        os.path.join(dir.out.ed_augustus,"split","{sample}","{chromosome}.prediction.gff")
     conda:
         f"{dir.envs}/augustus.yaml"
     params:
@@ -37,7 +37,7 @@ rule ed_augusuts_per_chromosome:
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
     log:
-        os.path.join(dir.logs,"ed_augustus_{group}_{chromosome}.log")
+        os.path.join(dir.logs,"ed_augustus_{sample}_{chromosome}.log")
     threads:
         config.resources.small.cpus
     shell:
@@ -49,9 +49,9 @@ rule ed_augusuts_per_chromosome:
 
 rule merge_ed_predictions:
     input:
-        expand(os.path.join(dir.out.ed_augustus,"split","{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
+        expand(os.path.join(dir.out.ed_augustus,"split","{{sample}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        temp(os.path.join(dir.out.ed_augustus,"{group}_prediction_naive.gff"))
+        temp(os.path.join(dir.out.ed_augustus,"{sample}_prediction_naive.gff"))
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -70,16 +70,16 @@ rule merge_ed_predictions:
 
 rule rename_ed_augustus:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction_naive.gff")
+        os.path.join(dir.out.ed_augustus,"{sample}_prediction_naive.gff")
     output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
+        os.path.join(dir.out.ed_augustus,"{sample}_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "rename_augustus_{group}.log")
+        os.path.join(dir.logs, "rename_augustus_{sample}.log")
     script:
         f"{dir.scripts}/rename_augustus_genes.py"
 

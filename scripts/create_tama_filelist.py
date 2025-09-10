@@ -1,5 +1,4 @@
 import pandas as pd
-import os 
 
 files_dict = {}
 for file in snakemake.input.files:
