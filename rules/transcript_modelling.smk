@@ -22,26 +22,6 @@ rule bam2fastq:
         samtools fastq {input} > {output}
         """
 
-rule index_genome:
-    input:
-        genome = config.required.genome
-    output:
-        os.path.join(dir.tools_index,genome_name,"index.mmi")
-    conda:
-        f"{dir.envs}/isoseq.yaml"
-    threads:
-        config.resources.medium.cpus,
-    resources:
-        slurm_extra = f"'--qos={config.resources.medium.qos}'",
-        cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.big.mem,
-        runtime =  config.resources.medium.time
-    shell:
-        """
-        mkdir -p {dir.tools_index}
-        pbmm2 index {input.genome} {output}
-        """
-
 rule IsoQuant:
     input:
         reads = os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq"),

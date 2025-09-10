@@ -1,8 +1,7 @@
-name: isoseq
+name: isoquant
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - isoseq
-  - lima
-  - pbmm2
+  - python=3.8
+  - isoquant
