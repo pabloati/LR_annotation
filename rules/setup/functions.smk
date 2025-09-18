@@ -6,20 +6,16 @@ def get_sqanti_gtf(config):
     elif config.augustus.prediction == "evidence_driven":
         return config.augustus.reference_gtf
 
-def get_samples_and_groups(file):
-    samples = []
-    groups = []
-    with open(file) as f:
-        i=0
-        for line in f:
-            if i == 0:
-                i+=1
-                continue
-            else:
-                samples.append(line.split("\t")[0])
-                if line.split("\t")[1] not in groups:
-                    groups.append(line.split("\t")[1])
-    return samples, groups
+def get_sample_name(file):
+    sample = os.path.splitext(os.path.basename(file))[0]
+    filetype = os.path.splitext(file)[1]
+    return sample, filetype
+
+def get_pbmm2_input(filetype,config):
+    if filetype == "fastq":
+        return config.required.input
+    else:
+        return os.path.join(dir.out.isoseq,f"{sample}.fastq")
 
 def get_chromosomes(file):
     import subprocess

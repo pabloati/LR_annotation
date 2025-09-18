@@ -9,7 +9,7 @@ include: os.path.join("rules","setup","directories.smk")
 include: os.path.join("rules","setup","installations.smk")
 include: os.path.join("rules","setup","functions.smk")
 
-samples,groups = get_samples_and_groups(config.required.samples_setup)
+sample,filetype = get_sample_name(config.required.input)
 genome_name = get_genome_name(config.required.genome)
 
 
@@ -23,7 +23,7 @@ include: os.path.join("rules","quality_control.smk")
 
 rule all:
     input:
-        expand(os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff"),group=groups),
-        expand(os.path.join(dir.out.qc_omark,"{group}","{group}.pdf"),group=groups),
-        expand(os.path.join(dir.out.qc_busco,"{group}"),group=groups),
-        expand(os.path.join(dir.out.qc_agat,"{group}","{group}_stats.txt"),group=groups),
+        os.path.join(dir.out.evidence_driven,"Final_clean_prediction.gff"),
+        os.path.join(dir.out.qc_omark,"Omark.pdf"),
+        os.path.join(dir.out.qc_busco),
+        os.path.join(dir.out.qc_agat,"Final_stats.txt"),
