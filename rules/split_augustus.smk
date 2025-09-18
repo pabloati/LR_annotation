@@ -36,15 +36,15 @@ rule ed_augusuts_per_chromosome:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
+    log:
+        os.path.join(dir.logs,"ed_augustus_{group}_{chromosome}.log")
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{group}_{chromosome}.log")
     shell:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 
+        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}  2>{log}
         """
 
 rule merge_ed_predictions:
@@ -99,14 +99,14 @@ rule ab_augustus_per_chromosome:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
+    log:
+        os.path.join(dir.logs,"ab_augustus_{chromosome}.log")
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{chromosome}.log")
     shell:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
-        augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 
+        augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 2>{log} 
         """
 
 rule merge_ab_predictions:

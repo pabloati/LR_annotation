@@ -24,7 +24,7 @@ def get_samples_and_groups(file):
 def get_chromosomes(file):
     import subprocess
     result = subprocess.run(["grep", ">", file], capture_output=True, text=True)
-    output_list = [line.replace('>', '') for line in result.stdout.strip().split('\n')]
+    output_list = [line.split(' ')[0].replace('>', '') for line in result.stdout.strip().split('\n')]
     return output_list
 
 def get_genome_name(file):

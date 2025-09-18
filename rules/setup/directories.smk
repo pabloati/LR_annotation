@@ -33,6 +33,7 @@ dir.tools_db = os.path.join(dir.tools, "databases")
 dir.tools_omark = os.path.join(dir.tools_db, "omark")
 dir.tools_busco = os.path.join(dir.tools_db, "busco")
 dir.tools_sqanti = os.path.join(dir.tools, "sqanti")
+dir.tools_gaqet2 = os.path.join(dir.tools, "gaqet2")
 dir.tools_index = os.path.join(dir.tools, "minimap2")
 dir.tools_reference = os.path.join(dir.tools, "split_reference")
 

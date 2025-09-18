@@ -23,7 +23,7 @@ rule tama_setup: # local_rule
     output:
         os.path.join(dir.out.ed_hints,"{group}","{group}_tama_filelist.txt")
     conda:
-        os.path.join(dir.envs,"sqanti3.yaml")
+        os.path.join(dir.envs,"basic.yaml")
     threads:
         config.resources.small.cpus,
     log: 
@@ -92,11 +92,12 @@ rule run_sqanti:
         os.path.join(dir.logs,"run_sqanti_{group}.log")
     resources:
         slurm_extra = f"'--qos={config.resources.medium.qos}'",
-        cpus_per_task = config.resources.medium.cpus,
-        mem = config.resources.medium.mem,
+        cpus_per_task = config.resources.busco.cpus,
+        mem = config.resources.big.mem,
         runtime =  config.resources.medium.time
     shell:
         """
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         python {dir.tools_sqanti}/sqanti3_qc.py --isoforms {input.isoforms} --refGTF {input.ref_gff} --refFasta {input.ref_genome} \
             --dir {dir.out.ed_sqanti}/{wildcards.group} --output {wildcards.group} -t {threads} &> {log}
         mv {dir.out.ed_sqanti}/{wildcards.group}/{wildcards.group}_corrected.cds.gff3 {output.gtf}
@@ -123,6 +124,7 @@ rule filter_isoforms:
         runtime =  config.resources.small.time
     shell:
         """
+        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         python {dir.tools_sqanti}/sqanti3_filter.py rules --sqanti_class {input.classification} --filter_gtf {input.gtf} \
             -j {params.json_rules} --dir {dir.out.ed_sqanti}/{wildcards.group} \
             --output {wildcards.group} &> {log}
@@ -180,7 +182,7 @@ else:
             name = config.augustus.species_name,
             extcfg = config.augustus.config if config.evidence_driven.config else f"{dir.envss}/extrinsic.M.RM.PB.cfg"
         log:
-            os.path.join(dir.logs,"run_augustus_{group}.log")
+            os.path.join(dir.logs,"run_augustus_ed_{group}.log")
         resources:
             slurm_extra = f"'--qos={config.resources.big.qos}'",
             cpus_per_task = config.resources.big.cpus,
@@ -189,5 +191,5 @@ else:
         shell:
             """
             augustus --species={params.name} {input.genome} --hintsfile={input.gff} \
-            --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}
+            --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 2> {log}
             """

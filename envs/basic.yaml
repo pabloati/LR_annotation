@@ -1,0 +1,11 @@
+name: trial
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.13
+  - pandas=2.2.3
+  - r-base>4.3.0
+  - r-dplyr=1.1.4
+  - r-readr=2.1.5
+  - r-stringr=1.5.1
+prefix: /home/patienza/.conda/envs/trial

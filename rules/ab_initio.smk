@@ -1,4 +1,5 @@
 # Snakefile for ab initio gene prediction
+import os
 
 # Setup local rules (do not require much resources)
 localrules: new_species, identify_bad_genes, extract_stop_codon_freq
@@ -91,8 +92,6 @@ rule concatenate_gff:
         busco_path = dir.out.ab_busco
     output:
         os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
-    conda:
-        os.path.join(dir.envs,"busco.yaml")
     params:
         lineage = config.ab_initio.lineage,
         gene_type = "single"
@@ -103,13 +102,39 @@ rule concatenate_gff:
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
-    script:
-        os.path.join(dir.scripts,"concatenate_GFF.py")
+    run:
+        with open(input.gene_list) as f:
+            gene_names = [line.strip() for line in f if line.strip()]
+        gff_path = os.path.join(input.busco_path,f"run_{params.lineage}",
+                                "busco_sequences",f"{params.gene_type}_copy_busco_sequences")
+        gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
+        shell("cat {files} > {output}", files=' '.join(gff_files))
+
+rule filter_miniprot_genes:
+    input:
+        os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
+    output:
+        os.path.join(dir.out.ab_augustus_model,"busco_genes.filtered.gff")
+    conda:
+        os.path.join(dir.envs,"basic.yaml")
+    params:
+        threshold = config.ab_initio.miniprot_threshold
+    log:
+        os.path.join(dir.logs,"filter_miniprot_genes.log")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time,
+    shell:
+        """
+        Rscript {dir.scripts}/filter_miniprot_genes.R {input} {output} {params.threshold}
+        """
 
 rule gff2genbank:
     input:
         genome = config.required.genome,
-        gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.gff")
+        gff = os.path.join(dir.out.ab_augustus_model,"busco_genes.filtered.gff")
     output:
         gen_bank = os.path.join(dir.out.ab_augustus_model,"busco_genes.gb")
     conda:
@@ -288,7 +313,7 @@ else:
             mem = config.resources.big.mem,
             runtime =  config.resources.big.time
         shell:
-            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} &> {log}"
+            "augustus --species={params.name} {input.genome} --protein=on --codingseq=on > {output} 2> {log}"
 
 rule gff2gtf:
     input:

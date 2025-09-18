@@ -22,6 +22,17 @@ rule install_sqanti:
         git clone https://github.com/ConesaLab/SQANTI3.git {dir.tools_sqanti}
         """
 
+rule install_gaqet2:
+    output:
+        touch(os.path.join(dir.tools_gaqet2,"gaqet2_installed.done"))
+    conda:
+        f"{dir.envs}/git.yaml"
+    shell:
+        """
+        if [ -d {dir.tools_gaqet2} ]; then rm -rf {dir.tools_gaqet2}; fi
+        git clone https://github.com/victorgcb1987/GAQET2.git {dir.tools_gaqet2}
+        """
+
 rule download_omark_db:
     output:
         os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
