@@ -7,7 +7,7 @@ rule bam2fastq:
     input:
         config.required.input
     output:
-        os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq")
+        os.path.join(dir.out.isoquant,"{sample}.cluster.fastq")
     conda:
         f"{dir.envs}/minimap2.yaml"
     threads:
@@ -24,23 +24,23 @@ rule bam2fastq:
 
 rule IsoQuant:
     input:
-        reads = os.path.join(dir.out.isoseq_cluster,"{sample}.cluster.fastq"),
+        reads = os.path.join(dir.out.isoquant,"{sample}.cluster.fastq"),
         genome = config.required.genome
     output:
         os.path.join(dir.out.isoquant,"{sample}","{sample}.transcript_models.gtf"),
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
-        cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
+        cpus_per_task = config.resources.medium.cpus,
+        mem = config.resources.medium.mem,
         runtime =  config.resources.small.time
     conda:
         f"{dir.envs}/isoquant.yaml"
     params:
         data_type = config.isoquant.data_type,
     threads:
-        config.resources.small.cpus,
+        config.resources.medium.cpus,
     log:
-        os.path.join(dir.logs,"isoseq_isoquant.log")
+        os.path.join(dir.logs,"isoquant_{sample}.log")
     shell:
         """
         prefix=$(basename {output} .transcript_models.gtf)
