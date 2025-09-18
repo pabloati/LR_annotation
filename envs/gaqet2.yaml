@@ -10,7 +10,7 @@ dependencies:
   - tesorter
   - diamond
   - omark
-  - seqkt
+  - seqtk
   - busco
   - python=3.10
   - pip:

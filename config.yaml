@@ -10,7 +10,7 @@ isoseq:
 augustus:
   prediction: evidence_driven
   reference_gtf: "data/mm39.ncbiRefSeq.gtf"
-  species_name: "mouse_trial"
+  species_name: "trial"
   utr: True
   mode: split
 qc:
@@ -18,6 +18,7 @@ qc:
 ab_initio:
   busco_downloads: "busco_downloads"
   lineage: "eutheria_odb10"
+  miniprot_threshold: 0.95 # Minimum identity threshold for miniprot gene models
   flanking_region: 1000
   test_size: 5000
 resources:

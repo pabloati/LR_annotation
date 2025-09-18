@@ -108,7 +108,7 @@ rule concatenate_gff:
         gff_path = os.path.join(input.busco_path,f"run_{params.lineage}",
                                 "busco_sequences",f"{params.gene_type}_copy_busco_sequences")
         gff_files = [f"{gff_path}/{name}.gff" for name in gene_names]
-        shell("cat {gff_files} > {output}")
+        shell("cat {files} > {output}", files=' '.join(gff_files))
 
 rule filter_miniprot_genes:
     input:
@@ -117,6 +117,8 @@ rule filter_miniprot_genes:
         os.path.join(dir.out.ab_augustus_model,"busco_genes.filtered.gff")
     conda:
         os.path.join(dir.envs,"basic.yaml")
+    params:
+        threshold = config.ab_initio.miniprot_threshold
     log:
         os.path.join(dir.logs,"filter_miniprot_genes.log")
     resources:
@@ -126,7 +128,7 @@ rule filter_miniprot_genes:
         runtime =  config.resources.small.time,
     shell:
         """
-        Rscript {dir.scripts}/"filter_miniprot_genes.R" {input} {output}
+        Rscript {dir.scripts}/filter_miniprot_genes.R {input} {output} {params.threshold}
         """
 
 rule gff2genbank:
