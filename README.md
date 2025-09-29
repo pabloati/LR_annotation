@@ -82,23 +82,7 @@ You’ll find an `envs/` folder for environment / dependency configurations.
 
 ## Usage
 
-From the root directory, run:
-
-```bash
-snakemake --profile profile_slurm.yaml  # or another execution mode
-```
-
-Or for local (no cluster) execution:
-
-```bash
-snakemake -j <num_threads>
-```
-
-You can also target specific rules or outputs:
-
-```bash
-snakemake path/to/output.gff3
-```
+The main script to run the pipeline is `SQANTI_evidence`
 
 ---
 
