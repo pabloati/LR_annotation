@@ -41,7 +41,7 @@ rule index_genome:
 
 rule mapping_reads_pbmm2:
     input:
-        reads = get_pbmm2_input(filetype,config),
+        reads = get_pbmm2_input(filetype,config,sample),
         index = os.path.join(dir.tools_index,genome_name,"index.mmi")
     output:
         os.path.join(dir.out.isoseq_mapping,f"{sample}.mapping_pbmm2.bam"),
@@ -58,7 +58,6 @@ rule mapping_reads_pbmm2:
         os.path.join(dir.logs,"isoseq_mapping.log")
     shell:
         """
-        pbmm2 align --preset ISOSEQ --sort {input.index} {input.reads}  {output} &> {log}
         """
 
 # TODO: see how to use the FLNC BAM if we decide to use IsoSeq3
