@@ -58,6 +58,7 @@ rule mapping_reads_pbmm2:
         os.path.join(dir.logs,"isoseq_mapping.log")
     shell:
         """
+        pbmm2 align --preset ISOSEQ --sort {input.index} {input.reads}  {output} &> {log}
         """
 
 # TODO: see how to use the FLNC BAM if we decide to use IsoSeq3

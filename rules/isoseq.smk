@@ -15,21 +15,6 @@ def get_samples(filename):
     return samples, files
 
 
-
-
-# rule consensus_calling:
-#     input:
-#         config.required.input
-#     output:
-#         bam = "results/isoannot/input.consensus_calling.bam",
-#         report = "results/isoannot/input.consensus_calling.report.txt"
-#     conda:
-#         f"{dir.envs}/isoseq.yaml"
-#     shell:
-#         """
-#         css {input} {output.bam} --report-file {output.report}
-#         """
-
 samples, files = get_samples_and_files("samples.txt")
 
 rule lima:

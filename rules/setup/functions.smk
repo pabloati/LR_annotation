@@ -11,7 +11,7 @@ def get_sample_name(file):
     filetype = os.path.splitext(file)[1]
     return sample, filetype
 
-def get_pbmm2_input(filetype,config):
+def get_pbmm2_input(filetype,config,sample):
     if filetype == ".fastq":
         return config.required.input
     else:
