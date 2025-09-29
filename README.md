@@ -59,7 +59,7 @@ You’ll find an `envs/` folder for environment / dependency configurations.
    ```bash
    git clone https://github.com/pabloati/LR_annotation.git
    cd LR_annotation
-````
+
 
 2. Create and activate a conda / mamba environment (if using):
 
