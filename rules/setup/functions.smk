@@ -12,7 +12,7 @@ def get_sample_name(file):
     return sample, filetype
 
 def get_pbmm2_input(filetype,config):
-    if filetype == "fastq":
+    if filetype == ".fastq":
         return config.required.input
     else:
         return os.path.join(dir.out.isoseq,f"{sample}.fastq")

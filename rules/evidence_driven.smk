@@ -1,6 +1,6 @@
 rule run_sqanti:
     input:
-        gtf = os.path.join(dir.out.isoseq_collapsed,f"{sample}.collapsed.gff")
+        isoforms = os.path.join(dir.out.isoseq_collapsed,f"{sample}.collapsed.gff"),
         ref_gff = get_sqanti_gtf(config),
         ref_genome = config.required.genome,
         sqanti = os.path.join(dir.tools_sqanti,"sqanti_installed.done")

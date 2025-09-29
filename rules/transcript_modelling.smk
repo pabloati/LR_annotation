@@ -1,5 +1,5 @@
 
-if filetype == "bam":
+if filetype == ".bam":
     rule bam2fastq:
         input:
             config.required.input
@@ -77,7 +77,7 @@ rule collapse_isoforms:
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
+        mem = config.resources.medium.mem,
         runtime =  config.resources.small.time
     shell:
         """
