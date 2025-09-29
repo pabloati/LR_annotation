@@ -1,5 +1,5 @@
 from Bio import SeqIO
-import os,sys
+import os
 
 def read_fasta(fastafile):
     records = list(SeqIO.parse(fastafile, "fasta"))
@@ -9,9 +9,9 @@ def split_fasta(records, outdir, type):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     for record in records:
-        filename = os.path.join(outdir, record.id + ".fasta")
+        filename = os.path.join(outdir, record.id + f".{type}")
         with open(filename, "w") as f:
-            SeqIO.write(record, f, "fasta")
+            SeqIO.write(record, f, type)
         f.close()
 
 if __name__ == "__main__":

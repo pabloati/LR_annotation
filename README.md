@@ -189,6 +189,3 @@ You might want to add:
 * More extensive examples & documentation
 
 ---
-
-That’s the baseline README. If you send me specific details (license, example dataset, more description of what rules do), I can further customize it.
-

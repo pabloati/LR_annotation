@@ -1,0 +1,23 @@
+ID: "SpeciesName"
+Assembly: "/path/to/assembly.fasta"
+Annotation: "/path/to/annotation.gff3"
+Basedir: "/path/to/GAQET/results"
+Threads: N
+Analysis:
+  - AGAT
+  - BUSCO
+  - PSAURON
+  - DETENGA
+  - OMARK
+  - PROTHOMOLOGY
+OMARK_db: "/path/to/omark_db.h5"
+OMARK_taxid: NCBItaxonID
+BUSCO_lineages:
+  -  clade1_odb10
+  -  clade2_odb10
+PROTHOMOLOGY_tags:
+  - TREMBL: "/path/to/uniprot_trembl_db.dmnd"
+  - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
+  - MYDB: "/path/to/mydb.dmnd"
+DETENGA_db: "rexdb-plant"
+

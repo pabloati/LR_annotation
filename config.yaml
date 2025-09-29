@@ -1,40 +1,46 @@
 required:
-  genome: "test/data/GRCh38.primary_assembly.chr22.fa"
+  genome: ""
   input: ""
-  outdir: "test/results/chr22"
-  toolsdir:
-  samples_setup: ""
+  outdir: "results"
+  toolsdir: "/home/pabloati/Programs/lr_annotation"
+  samples_setup: "data/experiment_setup.tsv"
 isoseq:
   primers: "data/original_primers.fasta"
   primers_to_samples: "primers_sample.csv"
+augustus:
   prediction: evidence_driven
-  reference_gtf: data/mm39.ncbiRefSeq.gtfl
-optional:
-  busco_downloads: "test/busco_downloads"
+  reference_gtf: "data/mm39.ncbiRefSeq.gtf"
+  species_name: "trial"
+  utr: True
+  mode: split
+qc:
+  omark_db: Metazoa
+ab_initio:
+  busco_downloads: "busco_downloads"
   lineage: "eutheria_odb10"
+  miniprot_threshold: 0.95 # Minimum identity threshold for miniprot gene models
   flanking_region: 1000
   test_size: 5000
-  species_name: "new_specie"
 resources:
   big:
     cpus: 10
-    mem: 32G
-    time: 24:00:00
+    mem: 20G
+    time: 24h
     qos: long
   busco:
-    cpus: 40
-    mem: 64G
-    time: 240:00:00
+    cpus: 30
+    mem: 60G
+    time: 120h
     qos: long
-  medium:
-    cpus: 8
-    mem: 16G
-    time: 8:00:00
   small:
     cpus: 2
     mem: 8G
-    time: 2:00:00
+    time: 2h
     qos: short
   small_bigMem:
     mem: 20G
-  
+  medium:
+    cpus: 8
+    mem: 12G
+    time: 10h
+    qos: short

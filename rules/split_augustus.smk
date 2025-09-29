@@ -1,16 +1,17 @@
 chromosomes=get_chromosomes(config.required.genome)
+
 rule split_fasta:
     input:
         fasta = config.required.genome
     output:
-        touch(os.path.join(dir.tools_reference,"fasta_split.done"))
+        touch(os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"))
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     conda:
-        f"{dir.env}/sqanti3.yaml"
+        f"{dir.envs}/sqanti3.yaml"
     threads:
         config.resources.small.cpus
     log:
@@ -20,36 +21,37 @@ rule split_fasta:
 
 rule ed_augusuts_per_chromosome:
     input:
-        os.path.join(dir.tools_reference,"fasta_split.done"),
+        os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done"),
-        gff = os.path.join(dir.out.ed_hints,"{group}","{group}.hints.gff")
+        gff = os.path.join(dir.out.ed_hints,"IsoSeq.hints.gff")
     output:
-        os.path.join(dir.out.evidence_driven,"augustus","{group}","{chromosome}.prediction.gff")
+        os.path.join(dir.out.ed_augustus,"split","{chromosome}.prediction.gff")
     conda:
-        f"{dir.env}/augustus.yaml"
+        f"{dir.envs}/augustus.yaml"
     params:
-        name = config.optional.species_name,
+        name = config.augustus.species_name,
         extcfg = f"{dir.envs}/extrinsic.M.RM.PB.cfg"
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
+    log:
+        os.path.join(dir.logs,"ed_augustus_{chromosome}.log")
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{group}_{chromosome}.log")
     shell:
         """
-        chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
+        chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output} 
+        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}  2>{log}
         """
-rule merge_ed_predicitons:
+
+rule merge_ed_predictions:
     input:
-        expand(os.path.join(dir.out.evidence_driven,"augustus","{{group}}","{chromosome}.prediction.gff"),chromosome=chromosomes)
+        expand(os.path.join(dir.out.ed_augustus,"split","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        gtf = os.path.join(dir.out.evidence_driven,"{group}_prediction.gtf")
+        temp(os.path.join(dir.out.ed_augustus,"Naive_prediction.gff"))
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -66,36 +68,52 @@ rule merge_ed_predicitons:
         done
         """
 
+rule rename_ed_augustus:
+    input:
+        os.path.join(dir.out.ed_augustus,"Naive_prediction.gff")
+    output:
+        os.path.join(dir.out.ed_augustus,"Augustus_prediction.gff")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "rename_augustus.log")
+    script:
+        f"{dir.scripts}/rename_augustus_genes.py"
+
+
 rule ab_augustus_per_chromosome:
     input:
-        os.path.join(dir.tools_reference,"fasta_split.done"),
+        os.path.join(dir.tools_reference,genome_name,f"{genome_name}_split.done"),
         mod = os.path.join(dir.out.ab_augustus_training,"SC_freq_mod.done")
     output:
         os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff")
     conda:
-        f"{dir.env}/augustus.yaml"
+        f"{dir.envs}/augustus.yaml"
     params:
-        name = config.optional.species_name,
+        name = config.augustus.species_name,
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.big.mem,
         runtime =  config.resources.big.time
+    log:
+        os.path.join(dir.logs,"ab_augustus_{chromosome}.log")
     threads:
         config.resources.small.cpus
-    log:
-        os.path.join(dir.logs,"run_augustus_{chromosome}.log")
     shell:
         """
-        chromosome={dir.tools_reference}/{wildcards.chromosome}.fasta
-        augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 
+        chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
+        augustus --species={params.name} $chromosome --protein=on --codingseq=on > {output} 2>{log} 
         """
 
 rule merge_ab_predictions:
     input:
         expand(os.path.join(dir.out.ab_augustus,"split","{chromosome}.prediction.gff"),chromosome=chromosomes)
     output:
-        gtf = os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gtf")
+        os.path.join(dir.out.ab_augustus,"split","ab_initio_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
@@ -107,4 +125,20 @@ rule merge_ab_predictions:
         """
         cat {input} | grep -v "#" > {output}
         """
+
+# Renaming predictions in the split mode
+rule rename_ab_augustus:
+    input:
+        os.path.join(dir.out.ab_augustus,"split","ab_initio_prediction.gff")
+    output:
+        os.path.join(dir.out.ab_augustus,"ab_initio_prediction.gff")
+    resources:
+        slurm_extra = f"'--qos={config.resources.small.qos}'",
+        cpus_per_task = config.resources.small.cpus,
+        mem = config.resources.small.mem,
+        runtime =  config.resources.small.time
+    log:
+        os.path.join(dir.logs, "rename_augustus_ab.log")
+    script:
+        f"{dir.scripts}/rename_augustus_genes.py"
 

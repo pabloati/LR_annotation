@@ -10,8 +10,7 @@ def main():
         for line in samples:
             line = line.strip("\n")
             brk_2_samples[line.split(",")[0]] = line.split(",")[1]
-    print(os.listdir(dir))
-    print(brk_2_samples.keys())
+    
     for brk in os.listdir(dir):
         directory = os.path.join(dir, brk)
         if os.path.isdir(directory):
@@ -24,6 +23,8 @@ def main():
                     pass
                 for file in os.listdir(directory):
                     new_name = file.replace(f"fl.{brk}", f"{sample_name}.fl")
+                    print(f"Renaming {file} to {new_name}")
+                    print(f"FULL PATH: {os.path.join(directory, file)}, to {os.path.join(path,new_name)}")
                     os.rename(os.path.join(directory, file), 
                             os.path.join(path,new_name))
                 os.rmdir(directory)
@@ -37,6 +38,6 @@ def main():
 
 if __name__=="__main__":
     main()
-    with open(snakemake.output[0], "w") as f:
-        f.write("Lima has been correctly renamed\n")
-    f.close()
+    # with open(snakemake.output[0], "w") as f:
+    #     f.write("Lima has been correctly renamed\n")
+    # f.close()

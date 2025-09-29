@@ -1,0 +1,10 @@
+{
+    "rest":[
+        {"RTS_stage": "FALSE",
+        "exons": 2,
+        "seq_A_downstream_TTS": [0,59],
+        "all_canonical": "canonical",
+        "predicted_NMD": "FALSE"
+        }
+    ]
+}

@@ -72,7 +72,7 @@ def main():
     l_genes = gene2list(snakemake.input[0])
     # Concatenate the gff files and produce the final gff
     gff_path = os.path.join(snakemake.input.busco_path,f"run_{snakemake.params.lineage}",
-                        "augustus_output","gff")
+                        "busco_sequences",f"{snakemake.params.gene_type}_copy_busco_sequences")
     out_path = snakemake.output[0]
     concatenate(l_genes, gff_path,out_path)
 
