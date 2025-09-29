@@ -1,17 +1,17 @@
 
 rule generate_proteome:
     input:
-        annot = os.path.join(dir.out.ed_augustus,"{group}_prediction.gff"), 
+        annot = os.path.join(dir.out.ed_augustus,"Augustus_prediction.gff"), 
         reference = config.required.genome,
     output:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction.aa")
+        os.path.join(dir.out.ed_augustus,"Augustus_prediction.aa")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "generate_proteome_{group}.log")
+        os.path.join(dir.logs, "generate_proteome.log")
     conda:
         os.path.join(dir.envs, "augustus.yaml")
     shell:
@@ -23,17 +23,17 @@ rule generate_proteome:
 
 rule omamer:
     input:
-        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction.aa"),
+        proteome = os.path.join(dir.out.ed_augustus,"Augustus_prediction.aa"),
         omark_db = os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     output:
-        os.path.join(dir.out.qc_omark,"{group}","{group}.omamer")
+        os.path.join(dir.out.qc_omark,"Final.omamer")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
-        mem = config.resources.small.mem,
+        mem = config.resources.medium.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "omamer_{group}.log")
+        os.path.join(dir.logs, "omamer.log")
     conda:
         os.path.join(dir.envs, "omark.yaml")
     shell:
@@ -43,17 +43,17 @@ rule omamer:
 
 rule omark:
     input:
-        omamer = os.path.join(dir.out.qc_omark,"{group}","{group}.omamer"),
+        omamer = os.path.join(dir.out.qc_omark,"Final.omamer"),
         omark_db = os.path.join(dir.tools_omark,f"{config.qc.omark_db}.h5")
     output:
-        os.path.join(dir.out.qc_omark,"{group}","{group}.pdf")
+        os.path.join(dir.out.qc_omark,"Final.pdf")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "omark_{group}.log")
+        os.path.join(dir.logs, "omark.log")
     conda:
         os.path.join(dir.envs, "omark.yaml")
     threads:
@@ -65,9 +65,9 @@ rule omark:
 
 rule busco_qc:
     input:
-        proteome = os.path.join(dir.out.ed_augustus,"{group}_prediction.aa"),        
+        proteome = os.path.join(dir.out.ed_augustus,"Augustus_prediction.aa"),        
     output:
-        directory(os.path.join(dir.out.qc_busco,"{group}")),
+        directory(os.path.join(dir.out.qc_busco)),
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.busco.cpus,
@@ -77,7 +77,7 @@ rule busco_qc:
         busco_dir = dir.tools_busco,
         lineage = config.ab_initio.lineage,
     log: 
-        os.path.join(dir.logs, "busco_qc_{group}.log")
+        os.path.join(dir.logs, "busco_qc.log")
     conda:
         os.path.join(dir.envs, "busco.yaml")
     threads:
@@ -90,16 +90,16 @@ rule busco_qc:
 
 rule agat_cleaning:
     input:
-        os.path.join(dir.out.ed_augustus,"{group}_prediction.gff")
+        os.path.join(dir.out.ed_augustus,"Augustus_prediction.gff")
     output:
-        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff")
+        os.path.join(dir.out.evidence_driven,"Final_clean_prediction.gff")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "agat_cleaning_{group}.log")
+        os.path.join(dir.logs, "agat_cleaning.log")
     conda:
         os.path.join(dir.envs, "agat.yaml")
     threads:
@@ -111,16 +111,16 @@ rule agat_cleaning:
 
 rule agat_stats:
     input:
-        os.path.join(dir.out.evidence_driven,"{group}_clean_prediction.gff")
+        os.path.join(dir.out.evidence_driven,"Final_clean_prediction.gff")
     output:
-        os.path.join(dir.out.qc_agat,"{group}","{group}_stats.txt")
+        os.path.join(dir.out.qc_agat,"Final_stats.txt")
     resources:
         slurm_extra = f"'--qos={config.resources.small.qos}'",
         cpus_per_task = config.resources.small.cpus,
         mem = config.resources.small.mem,
         runtime =  config.resources.small.time
     log:
-        os.path.join(dir.logs, "agat_stats_{group}.log")
+        os.path.join(dir.logs, "agat_stats.log")
     conda:
         os.path.join(dir.envs, "agat.yaml")
     threads:
