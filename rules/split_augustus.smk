@@ -44,7 +44,8 @@ rule ed_augusuts_per_chromosome:
         """
         chromosome={dir.tools_reference}/{genome_name}/{wildcards.chromosome}.fasta
         augustus --species={params.name} $chromosome --hintsfile={input.gff} \
-        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on > {output}  2>{log}
+        --extrinsicCfgFile={params.extcfg} --protein=on --codingseq=on \
+        --alternatives-from-evidence=true --alternatives-from-evidence=true > {output}  2>{log}
         """
 
 rule merge_ed_predictions:
